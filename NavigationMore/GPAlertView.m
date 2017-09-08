@@ -7,6 +7,7 @@
 //
 
 #import "GPAlertView.h"
+#import "UIImage+RTTint.h"
 
 #define ScreenWidth [UIScreen mainScreen].bounds.size.width
 #define ScreenHeight [UIScreen mainScreen].bounds.size.height
@@ -15,6 +16,7 @@ typedef NS_ENUM(NSInteger, AlertViewMode) {
     AlertViewModeNavigation,    // 导航
     AlertViewModeCell,          // cell
 };
+
 
 @interface GPAlertView()<UITableViewDataSource, UITableViewDelegate>
 {
@@ -32,11 +34,12 @@ typedef NS_ENUM(NSInteger, AlertViewMode) {
 @property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, assign) AlertViewMode type;
 @property (nonatomic, strong) UIColor *bgColor;
+//@property (nonatomic, assign) SanAlignment sanAlignment;
+@property (nonatomic, assign) NSUInteger a;
 @end
 
 static NSString *tbViewIdentifier = @"tableViewIdentifier";
 static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
-
 @implementation GPAlertView
 
 #pragma mark ---------初始化方法------------
@@ -65,7 +68,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     }
     if (self = [super init]) {
         self.backgroundColor = [UIColor clearColor];
-        //NSLog(@"ca %@", NSStringFromCGRect(itemRect));
+        //NSLog(@"源 %@", NSStringFromCGRect(itemRect));
         
         // 默认值
         _bgColor = [UIColor blackColor];
@@ -74,8 +77,9 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
         _tbCellHeight = 60.0f;
         _collectionViewCellWidth = 60.0f;
         _contentViewWidth = 178.0f;
-        _sanSize = CGSizeMake(15, 9);
+        _sanSize = CGSizeMake(18, 10.5); // 原图大小 36 * 21
         _corneradius = 5;
+        _sanAlignment = NSTextAlignmentCenter;
         
         reItemRect = itemRect;
         _type = type;
@@ -96,14 +100,23 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
             {
                 CGFloat orgY = itemRect.origin.y == 0 ? 65 : CGRectGetMaxY(itemRect);
                 CGFloat sanX = itemRect.origin.x + itemRect.size.width / 2 - _sanSize.width / 2;
-                _sanjiaoxing.frame = CGRectMake(sanX, orgY, _sanSize.width, _sanSize.height);
                 
-                CGFloat height = _dataSource.count > 5 ? _tbCellHeight * 5 : _tbCellHeight *_dataSource.count;
-                _contentView.frame = CGRectMake(sanX > 185 ? (ScreenWidth - (_contentViewWidth + 10)):10, orgY + _sanSize.height, _contentViewWidth, height);
-                maskLayer = [[CAShapeLayer alloc]init];
-                maskLayer.frame = _contentView.bounds;
-                [self refresh];
-                _contentView.layer.mask = maskLayer;
+                if (sanX > 300) { // 需要修改
+                    CGRect sanRect = CGRectMake(CGRectGetMaxX(itemRect) - 12 - _sanSize.width, orgY, _sanSize.width, _sanSize.height);
+                    _sanAlignment = NSTextAlignmentRight;
+                    [self sanFrame:sanRect];
+                }
+                else if (sanX < 50){ // 需要修改
+                    CGRect sanRect = CGRectMake(16, orgY, _sanSize.width, _sanSize.height);
+                    _sanAlignment = NSTextAlignmentLeft;
+                    [self sanFrame:sanRect];
+                }
+                else{
+                    // todo:
+                    CGRect sanRect = CGRectMake(sanX, orgY, _sanSize.width, _sanSize.height);
+                   
+                    [self sanFrame:sanRect];
+                }
                 
                 // 内容展示
                 tbView = [[UITableView alloc] initWithFrame:_contentView.bounds];
@@ -120,20 +133,22 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
                 break;
             case AlertViewModeCell:
             {
-                CGFloat width = _dataSource.count > 4? _collectionViewCellWidth * 4 : _collectionViewCellWidth * dataSource.count;
+                _contentViewWidth = _dataSource.count > 4? _collectionViewCellWidth * 4 : _collectionViewCellWidth * dataSource.count;
                 if (itemRect.origin.y < 100) {
                     _sanjiaoxing.frame = CGRectMake(CGRectGetMidX(itemRect) - _sanSize.width / 2, CGRectGetMaxY(itemRect), _sanSize.width, _sanSize.height);
-                    _contentView.frame = CGRectMake((ScreenWidth - width) / 2, CGRectGetMaxY(_sanjiaoxing.frame), width, 30);
+                    _contentView.frame = CGRectMake((ScreenWidth - _contentViewWidth) / 2, CGRectGetMaxY(_sanjiaoxing.frame), _contentViewWidth, 30);
                 }
                 else{
                     _sanjiaoxing.isOppsote = YES;
                     _sanjiaoxing.frame = CGRectMake(CGRectGetMidX(itemRect) - _sanSize.width / 2, itemRect.origin.y - _sanSize.height, _sanSize.width, _sanSize.height);
-                    _contentView.frame = CGRectMake((ScreenWidth - width) / 2, CGRectGetMinY(_sanjiaoxing.frame) - 30, width, 30);
+                    _contentView.frame = CGRectMake((ScreenWidth - _contentViewWidth) / 2, CGRectGetMinY(_sanjiaoxing.frame) - 30, _contentViewWidth, 30);
                 }
                 
                 maskLayer = [[CAShapeLayer alloc]init];
                 maskLayer.frame = _contentView.bounds;
-                [self refresh];
+                
+                maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopLeft |UIRectCornerTopRight cornerRadii:CGSizeMake(_corneradius,_corneradius)];
+                maskLayer.path = maskPath.CGPath;
                 _contentView.layer.mask = maskLayer;
                 
                 // 内容展示
@@ -161,6 +176,54 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     return self;
 }
 
+- (void) sanFrame:(CGRect) frame{
+    _sanjiaoxing.frame = frame;
+    UIImage *image = [[UIImage imageNamed:@"小三角"] rt_tintedImageWithColor:_bgColor];
+    _sanjiaoxing.image = image;
+    
+    CGFloat height = 0;
+    if (_type == AlertViewModeNavigation) {
+        height = _dataSource.count > 5 ? _tbCellHeight * 5 : _tbCellHeight *_dataSource.count;
+        if (_sanAlignment == NSTextAlignmentRight) { // 三角形固定在右边
+            if (_a ==3) {
+                _sanjiaoxing.transform = CGAffineTransformMakeScale(1.0, 1.0);
+            }
+            for (CALayer *layer in _sanjiaoxing.layer.sublayers) {
+                [layer removeFromSuperlayer];
+            }
+            _contentView.frame = CGRectMake(CGRectGetMaxX(_sanjiaoxing.frame) - _contentViewWidth, CGRectGetMaxY(_sanjiaoxing.frame), _contentViewWidth, height);
+            maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopLeft cornerRadii:CGSizeMake(_corneradius,_corneradius)];
+        }
+        else if (_sanAlignment == NSTextAlignmentLeft) { //三角形固定在左边
+            _a = 3;
+            for (CALayer *layer in _sanjiaoxing.layer.sublayers) {
+                [layer removeFromSuperlayer];
+            }
+            _sanjiaoxing.transform = CGAffineTransformMakeScale(-1.0, 1.0);
+            _contentView.frame = CGRectMake(CGRectGetMinX(_sanjiaoxing.frame), CGRectGetMaxY(_sanjiaoxing.frame), _contentViewWidth, height);
+            maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopRight cornerRadii:CGSizeMake(_corneradius,_corneradius)];
+        }
+        else{
+            _sanjiaoxing.image = nil;
+            if (CGRectGetMinX(reItemRect) > ScreenWidth / 2) { // 右边的item
+                _contentView.frame = CGRectMake(ScreenWidth - 16 - _contentViewWidth, CGRectGetMaxY(_sanjiaoxing.frame), _contentViewWidth, height);
+            }
+            else{
+                _contentView.frame = CGRectMake(16, CGRectGetMaxY(_sanjiaoxing.frame), _contentViewWidth, height);
+            }
+            maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopRight|UIRectCornerTopLeft cornerRadii:CGSizeMake(_corneradius,_corneradius)];
+        }
+    }
+    else{
+        
+    }
+    
+    maskLayer = [[CAShapeLayer alloc]init];
+    maskLayer.frame = _contentView.bounds;
+    maskLayer.path = maskPath.CGPath;
+    _contentView.layer.mask = maskLayer;
+}
+
 #pragma mark ---------setter方法------------
 - (void)setTextColor:(UIColor *)textColor{
     _textColor = textColor;
@@ -183,100 +246,101 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
 }
 
 - (void)setSanSize:(CGSize)sanSize{
-    _sanSize = sanSize;
-    CGRect rect = _sanjiaoxing.frame;
-    CGRect contentRect = _contentView.frame;
     
-    switch (_type) {
-        case AlertViewModeNavigation:
-        {
-            // 导航
-            CGFloat orgY = reItemRect.origin.y == 0 ? 65 : CGRectGetMaxY(reItemRect);
-            _sanjiaoxing.frame = CGRectMake(rect.origin.x + rect.size.width / 2 - _sanSize.width / 2, rect.origin.y, _sanSize.width, _sanSize.height);
-            _contentView.frame = CGRectMake(contentRect.origin.x, orgY + _sanSize.height, contentRect.size.width, contentRect.size.height);
-        }
-            break;
-        case AlertViewModeCell:
-            // cell
-            if (reItemRect.origin.y < 100) {
-                _sanjiaoxing.frame = CGRectMake(CGRectGetMidX(reItemRect) - _sanSize.width / 2, CGRectGetMaxY(reItemRect), _sanSize.width, _sanSize.height);
-                _contentView.frame = CGRectMake((ScreenWidth - contentRect.size.width) / 2, CGRectGetMaxY(_sanjiaoxing.frame), contentRect.size.width, 30);
-            }
-            else{
-                _sanjiaoxing.isOppsote = YES;
-                _sanjiaoxing.frame = CGRectMake(CGRectGetMidX(reItemRect) - _sanSize.width / 2, reItemRect.origin.y - _sanSize.height, _sanSize.width, _sanSize.height);
-                _contentView.frame = CGRectMake((ScreenWidth - contentRect.size.width) / 2, CGRectGetMinY(_sanjiaoxing.frame) - 30, contentRect.size.width, 30);
-            }
-            break;
-        default:
-            break;
-    }
-    
-    [self refresh];
 }
 
-- (void)setAlignment:(NSTextAlignment)alignment{
-    _alignment = alignment;
-    CGRect red = _contentView.frame;
-    if (_alignment == NSTextAlignmentRight) { // 居右
-        _contentView.frame = CGRectMake(CGRectGetMaxX(_sanjiaoxing.frame) - red.size.width, red.origin.y, red.size.width, red.size.height);
-        tbView.frame = _contentView.bounds;
-        maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopLeft cornerRadii:CGSizeMake(_corneradius,_corneradius)];
-    }
-    else if (_alignment == NSTextAlignmentLeft) { // 居左
-        _contentView.frame = CGRectMake(CGRectGetMinX(_sanjiaoxing.frame), red.origin.y, red.size.width, red.size.height);
-        tbView.frame = _contentView.bounds;
-        maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopRight cornerRadii:CGSizeMake(_corneradius,_corneradius)];
-    }
-    maskLayer.path = maskPath.CGPath;
+-(void)setSanAlignment:(NSTextAlignment)sanAlignment{
+    _sanAlignment = sanAlignment;
+    CGRect frame = _sanjiaoxing.frame;
+    [self sanFrame:frame];
 }
+
+
 
 -(void)setTbCellHeight:(CGFloat)tbCellHeight{
-    if (!tbView) {
-        return;
-    }
     _tbCellHeight = tbCellHeight;
-    CGRect red = _contentView.frame;
-    CGFloat height = _dataSource.count > 5 ? _tbCellHeight * 5 : _tbCellHeight *_dataSource.count;
-    _contentView.frame = CGRectMake(red.origin.x, red.origin.y, red.size.width, height);
-    tbView.frame = _contentView.bounds;
-    [self refresh];
+    CGRect frame = _sanjiaoxing.frame;
+    [self sanFrame:frame];
 }
 
 -(void)setContentViewWidth:(CGFloat)contentViewWidth{
-    if (!tbView) {
-        return;
-    }
     _contentViewWidth = contentViewWidth;
-    
-    CGRect red = _contentView.frame;
-    CGFloat x = red.origin.x + 178 - _contentViewWidth > _sanjiaoxing.frame.origin.x ? _sanjiaoxing.frame.origin.x - 10 : red.origin.x + 178 - _contentViewWidth;
-    _contentView.frame = CGRectMake(red.origin.x <= 16 ?10:x, red.origin.y, _contentViewWidth, red.size.height);
-    tbView.frame = _contentView.bounds;
-    [self refresh];
+    if (_sanAlignment == NSTextAlignmentCenter) {
+        if (CGRectGetMinX(reItemRect) > ScreenWidth / 2) { // 右边的item
+            if (CGRectGetMinX(_sanjiaoxing.frame) < ScreenWidth - 16 - _contentViewWidth) {
+                _contentViewWidth = ScreenWidth - 16 - CGRectGetMinX(_sanjiaoxing.frame);
+                _sanAlignment = NSTextAlignmentLeft;
+            }
+        }
+        else{
+            if (_contentViewWidth < CGRectGetMaxX(_sanjiaoxing.frame) - 16) {
+                _contentViewWidth = CGRectGetMaxX(_sanjiaoxing.frame) - 16;
+                _sanAlignment = NSTextAlignmentRight;
+            }
+        }
+    }
+    CGRect frame = _sanjiaoxing.frame;
+    [self sanFrame:frame];
 }
 
 -(void)setBackgroundColor:(UIColor *)backgroundColor{
     [super setBackgroundColor:[UIColor clearColor]];
     _bgColor = backgroundColor;
     _contentView.backgroundColor = _bgColor;
-    _sanjiaoxing.layerFillColor = _bgColor;
+    if (_sanjiaoxing.image) {
+        _sanjiaoxing.image = [[UIImage imageNamed:@"小三角"] rt_tintedImageWithColor:_bgColor];
+    }
+    else{
+        _sanjiaoxing.layerFillColor = _bgColor;
+    }
 }
 
 -(void)setCorneradius:(CGFloat)corneradius{
-    _corneradius = corneradius;
-    [self refresh];
+    
 }
 
 - (void) refresh{
-    maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopLeft |UIRectCornerTopRight cornerRadii:CGSizeMake(_corneradius,_corneradius)];
-    maskLayer.path = maskPath.CGPath;
+    
 }
 
 
 - (void) show{
     [[UIApplication sharedApplication].keyWindow addSubview:self];
 }
+// --------end----------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -316,7 +380,6 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     UIImageView *img = (UIImageView*)[cell viewWithTag:400];
     UILabel *lbTitle = (UILabel*)[cell viewWithTag:401];
     if (img) {
-        img.backgroundColor = [UIColor whiteColor];
         img.image = [UIImage imageNamed:_imageNameSource[indexPath.row]];
     }
     

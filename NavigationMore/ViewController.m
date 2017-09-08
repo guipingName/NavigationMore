@@ -24,7 +24,6 @@
     // Do any additional setup after loading the view, typically from a nib.
     
     self.view.backgroundColor = [UIColor whiteColor];
-    //imv0.transform = CGAffineTransformScale(imv0.transform, -1.0, 1.0);
     self.title = @"首页";
     [self setNavigationItem];
     [self.view addSubview:self.tbView];
@@ -32,12 +31,55 @@
 
 
 #pragma mark -------添加提示框--------
+- (void) btnMoreClicked:(UIButton *) sender{
+    NSArray *data = @[@"个人中心", @"活动介绍"];
+    GPAlertView *alertView = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame data:data];
+    alertView.contentViewWidth = 80;
+    alertView.tbCellHeight = 30;
+//    //alertView.sanSize = CGSizeMake(20, 12);
+    alertView.titleFont = [UIFont systemFontOfSize:12];
+    alertView.target = (id <GPAlertViewDelegate>) self;
+    [alertView show];
+//    alertView.alignment = NSTextAlignmentLeft;
+    [alertView setSelectedItemCallBack:^(NSString *title){
+        NSLog(@"block :%@", title);
+    }];
+}
+
+- (void) btnAddClicked:(UIButton *) sender{
+    NSArray *data = @[@"扫一扫", @"添加设备"];
+    GPAlertView *alertView   = [[GPAlertView alloc] initWithNavigationIItemRect:sender.frame titleArray:data imageNameArray:data];
+//    alertView.alignment = NSTextAlignmentRight;
+    alertView.target = (id <GPAlertViewDelegate>) self;
+    [alertView show];
+    [alertView setSelectedItemCallBack:^(NSString *title){
+        NSLog(@"block :%@", title);
+    }];
+}
+
+- (void) btnShareClicked:(UIButton *) sender{
+    NSArray *data = @[@"悟空", @"增强版", @"红外感应", @"智能门磁", @"海曼检测", @"S3网关", @"门栓"];
+    GPAlertView *alertView = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame data:data];
+    alertView.target = (id <GPAlertViewDelegate>) self;
+    alertView.contentViewWidth = 100;
+    alertView.backgroundColor = [UIColor orangeColor];
+    [alertView show];
+//    alertView.sanAlignment = NSTextAlignmentRight;
+//    alertView.tbCellHeight = 35;
+//    alertView.titleFont = [UIFont systemFontOfSize:15];
+//    alertView.backgroundColor = [UIColor colorWithRed:40/255.0 green:170/255.0 blue:230/255.0 alpha:1];
+//    alertView.contentViewWidth = 100;
+    
+    [alertView setSelectedItemCallBack:^(NSString *title){
+        NSLog(@"block :%@", title);
+    }];
+}
+
 - (void) longGesture:(UILongPressGestureRecognizer *) gesture{
     if(gesture.state == UIGestureRecognizerStateBegan) {
         CGPoint point = [gesture locationInView:_tbView];
         NSIndexPath *indexPath = [_tbView indexPathForRowAtPoint:point];
         if(indexPath == nil) return ;
-        //add your code here
         
         //        CGRect rectInTableView = [myTableView rectForRowAtIndexPath:indexPath];
         //        CGRect cellRrect = [myTableView convertRect:rectInTableView toView:[myTableView superview]];
@@ -52,55 +94,13 @@
         NSArray *data = @[@"布防", @"修改名称", @"撤防", @"报警"];
         GPAlertView *alertView = [[GPAlertView alloc] initWithTableViewCell:lbRrect data:data indexPath:indexPath];
         alertView.titleFont = [UIFont systemFontOfSize:12];
-        alertView.sanSize = CGSizeMake(10, 6.18);
-        alertView.backgroundColor = [UIColor colorWithRed:40/255.0 green:170/255.0 blue:230/255.0 alpha:1];
+       // alertView.sanSize = CGSizeMake(10, 6.18);
+        //alertView.backgroundColor = [UIColor colorWithRed:40/255.0 green:170/255.0 blue:230/255.0 alpha:1];
         alertView.target = (id <GPAlertViewDelegate>) self;
         [alertView show];
     }
 }
 
-
-- (void) btnMoreClicked:(UIButton *) sender{
-    NSArray *data = @[@"个人中心", @"活动介绍"];
-    GPAlertView *alertView = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame data:data];
-    alertView.contentViewWidth = 80;
-    alertView.tbCellHeight = 30;
-    alertView.sanSize = CGSizeMake(20, 12);
-    alertView.titleFont = [UIFont systemFontOfSize:12];
-    alertView.backgroundColor = [UIColor orangeColor];
-    alertView.target = (id <GPAlertViewDelegate>) self;
-    [alertView show];
-    alertView.alignment = NSTextAlignmentLeft;
-    [alertView setSelectedItemCallBack:^(NSString *title){
-        NSLog(@"block :%@", title);
-    }];
-}
-
-- (void) btnAddClicked:(UIButton *) sender{
-    NSArray *data = @[@"悟空", @"增强版", @"红外感应", @"智能门磁", @"海曼检测", @"S3网关", @"门栓"];
-    GPAlertView *alertView = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame data:data];
-    alertView.target = (id <GPAlertViewDelegate>) self;
-    [alertView show];
-    alertView.tbCellHeight = 35;
-    alertView.titleFont = [UIFont systemFontOfSize:15];
-    alertView.backgroundColor = [UIColor colorWithRed:40/255.0 green:170/255.0 blue:230/255.0 alpha:1];
-    alertView.contentViewWidth = 100;
-    alertView.alignment = NSTextAlignmentRight;
-    [alertView setSelectedItemCallBack:^(NSString *title){
-        NSLog(@"block :%@", title);
-    }];
-}
-
-- (void) btnShareClicked:(UIButton *) sender{
-    NSArray *data = @[@"扫一扫", @"添加设备", @"加备1", @"添备2", @"加备3", @"添备4", @"加备5", @"添备6", @"加备7", @"添备8"];
-    NSArray *imgArray = @[@"扫一扫", @"添加设备", @"添加设备", @"添加设备", @"加备", @"添备", @"加备", @"添备", @"加备", @"添备"];
-    GPAlertView *alertView   = [[GPAlertView alloc] initWithNavigationIItemRect:sender.frame titleArray:data imageNameArray:imgArray];
-    alertView.target = (id <GPAlertViewDelegate>) self;
-    [alertView show];
-    [alertView setSelectedItemCallBack:^(NSString *title){
-        NSLog(@"block :%@", title);
-    }];
-}
 
 #pragma mark --- GPAlertViewDelegate ----
 - (void)didSlectedItemWithTitle:(NSString *)title{
@@ -157,9 +157,13 @@
     UIButton *btnMore = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
     [btnMore setImage:[UIImage imageNamed:@"更多"] forState:UIControlStateNormal];
     [btnMore addTarget: self action:@selector(btnMoreClicked:) forControlEvents:UIControlEventTouchUpInside];
+    UIButton *btnShare0 = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+    [btnShare0 setImage:[UIImage imageNamed:@"分享"] forState:UIControlStateNormal];
+    [btnShare0 addTarget: self action:@selector(btnShareClicked:) forControlEvents:UIControlEventTouchUpInside];
     
     UIBarButtonItem *itemMore = [[UIBarButtonItem alloc] initWithCustomView:btnMore];
-    [self.navigationItem setLeftBarButtonItems:@[itemSpace,itemMore]];
+    UIBarButtonItem *itemMore1 = [[UIBarButtonItem alloc] initWithCustomView:btnShare0];
+    
     
     UIButton *btnAdd = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
     [btnAdd setImage:[UIImage imageNamed:@"添加"] forState:UIControlStateNormal];
@@ -170,6 +174,8 @@
     
     UIBarButtonItem *itemAdd = [[UIBarButtonItem alloc] initWithCustomView:btnAdd];
     UIBarButtonItem *itemShare = [[UIBarButtonItem alloc] initWithCustomView:btnShare];
+    
+    [self.navigationItem setLeftBarButtonItems:@[itemSpace,itemMore, itemMore1]];
     self.navigationItem.rightBarButtonItems = @[itemSpace, itemAdd, itemShare];
 }
 

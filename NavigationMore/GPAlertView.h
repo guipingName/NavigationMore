@@ -25,9 +25,9 @@
 @property (nonatomic, assign) CGFloat contentViewWidth; // 单元格宽度（导航） Default 178
 @property (nonatomic, assign) CGFloat tbCellHeight;     // 单元格高度（导航） Default 60
 @property (nonatomic, assign) CGFloat collectionViewCellWidth; // 单元格宽度（cell） ?
-@property (nonatomic, assign) CGSize sanSize;           // 三角形的宽高 Default 20 10
-@property (nonatomic, assign) CGFloat corneradius;      // 圆角 Default 5
-@property (nonatomic, assign) NSTextAlignment alignment;
+@property (nonatomic, assign) CGSize sanSize;           // 三角形的宽高 Default 20 10?
+@property (nonatomic, assign) CGFloat corneradius;      // 圆角 Default 5?
+@property (nonatomic, assign) NSTextAlignment sanAlignment;
 
 
 // 导航栏提示框（有图）
@@ -45,7 +45,7 @@
 @end
 
 
-@interface sanjiaoxingView : UIView
+@interface sanjiaoxingView : UIImageView
 @property (nonatomic, assign) BOOL isOppsote;
 @property (nonatomic, strong) UIColor *layerFillColor;
 @end
