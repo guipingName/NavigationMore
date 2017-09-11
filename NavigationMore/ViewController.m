@@ -29,7 +29,6 @@
     [self.view addSubview:self.tbView];
 }
 
-
 #pragma mark -------添加提示框--------
 - (void) btnMoreClicked:(UIButton *) sender{
     NSArray *data = @[@"个人中心", @"活动介绍"];
@@ -51,6 +50,7 @@
     GPAlertView *alertView   = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame titleArray:data imageNameArray:data];
     alertView.target = (id <GPAlertViewDelegate>) self;
     [alertView show];
+    alertView.headerViewAlignment = HeaderviewLocationRight;
     [alertView setSelectedItemCallBack:^(NSString *title){
         NSLog(@"block :%@", title);
     }];
@@ -62,7 +62,6 @@
     alertView.target = (id <GPAlertViewDelegate>) self;
     alertView.backgroundColor = [UIColor orangeColor];
     [alertView show];
-    alertView.headerViewAlignment = HeaderviewLocationRight;
     alertView.contentViewWidth = 100;
     alertView.tbCellHeight = 35;
     alertView.titleFont = [UIFont systemFontOfSize:15];

@@ -101,24 +101,21 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
         switch (type) {
             case AlertViewModeNavigation:
             {
-                CGFloat orgY = itemRect.origin.y == 0 ? 65 : CGRectGetMaxY(itemRect);
-                CGFloat sanX = itemRect.origin.x + itemRect.size.width / 2 - _sanSize.width / 2;
-                
-                if (sanX > 300) { // 需要修改
+                CGFloat orgY = itemRect.origin.y <= 7 ? 65 : CGRectGetMaxY(itemRect);
+                CGFloat sanX = CGRectGetMidX(itemRect) - _sanSize.width / 2;
+                if (CGRectGetMidX(itemRect) > 340) {
                     CGRect sanRect = CGRectMake(CGRectGetMaxX(itemRect) - 12 - _sanSize.width, orgY, _sanSize.width, _sanSize.height);
                     _headerViewAlignment = HeaderviewLocationRight;
-                    [self sanFrame:sanRect];
+                    [self setHeaderViewFrame:sanRect];
                 }
-                else if (sanX < 50){ // 需要修改
+                else if (CGRectGetMidX(itemRect) < 35){
                     CGRect sanRect = CGRectMake(16, orgY, _sanSize.width, _sanSize.height);
                     _headerViewAlignment = HeaderviewLocationLeft;
-                    [self sanFrame:sanRect];
+                    [self setHeaderViewFrame:sanRect];
                 }
                 else{
-                    // todo:
                     CGRect sanRect = CGRectMake(sanX, orgY, _sanSize.width, _sanSize.height);
-                   
-                    [self sanFrame:sanRect];
+                    [self setHeaderViewFrame:sanRect];
                 }
                 
                 // 内容展示
@@ -179,7 +176,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     return self;
 }
 
-- (void) sanFrame:(CGRect) frame{
+- (void) setHeaderViewFrame:(CGRect) frame{
     _headerView.frame = frame;
     UIImage *image = [[UIImage imageNamed:@"小三角"] rt_tintedImageWithColor:_bgColor];
     _headerView.image = image;
@@ -241,33 +238,19 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
 -(void)setHeaderViewAlignment:(HeaderviewLocation)headerViewAlignment{
     _headerViewAlignment = headerViewAlignment;
     CGRect frame = _headerView.frame;
-    [self sanFrame:frame];
+    [self setHeaderViewFrame:frame];
 }
 
 -(void)setTbCellHeight:(CGFloat)tbCellHeight{
     _tbCellHeight = tbCellHeight;
     CGRect frame = _headerView.frame;
-    [self sanFrame:frame];
+    [self setHeaderViewFrame:frame];
 }
 
 -(void)setContentViewWidth:(CGFloat)contentViewWidth{
     _contentViewWidth = contentViewWidth;
-    if (_headerViewAlignment == NSTextAlignmentCenter) {
-        if (CGRectGetMinX(reItemRect) > ScreenWidth / 2) { // 右边的item
-            if (CGRectGetMinX(_headerView.frame) < ScreenWidth - 16 - _contentViewWidth) {
-                _contentViewWidth = ScreenWidth - 16 - CGRectGetMinX(_headerView.frame);
-                _headerViewAlignment = HeaderviewLocationLeft;
-            }
-        }
-        else{
-            if (_contentViewWidth < CGRectGetMaxX(_headerView.frame) - 16) {
-                _contentViewWidth = CGRectGetMaxX(_headerView.frame) - 16;
-                _headerViewAlignment = HeaderviewLocationRight;
-            }
-        }
-    }
     CGRect frame = _headerView.frame;
-    [self sanFrame:frame];
+    [self setHeaderViewFrame:frame];
 }
 
 -(void)setBackgroundColor:(UIColor *)backgroundColor{
