@@ -246,7 +246,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     
 }
 
--(void)setSanAlignment:(HeaderviewLocation)headerViewAlignment{
+-(void)setHeaderViewAlignment:(HeaderviewLocation)headerViewAlignment{
     _headerViewAlignment = headerViewAlignment;
     CGRect frame = _headerView.frame;
     [self sanFrame:frame];

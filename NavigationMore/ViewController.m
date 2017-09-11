@@ -49,7 +49,7 @@
 - (void) btnAddClicked:(UIButton *) sender{
     NSArray *data = @[@"扫一扫", @"添加设备"];
     GPAlertView *alertView   = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame titleArray:data imageNameArray:data];
-//    alertView.headerViewAlignment = HeaderviewLocationRight;
+    alertView.headerViewAlignment = HeaderviewLocationLeft;
     alertView.target = (id <GPAlertViewDelegate>) self;
     [alertView show];
     [alertView setSelectedItemCallBack:^(NSString *title){
@@ -66,10 +66,7 @@
     alertView.headerViewAlignment = HeaderviewLocationLeft;
     alertView.contentViewWidth = 100;
     alertView.tbCellHeight = 35;
-//    alertView.titleFont = [UIFont systemFontOfSize:15];
-//    alertView.backgroundColor = [UIColor colorWithRed:40/255.0 green:170/255.0 blue:230/255.0 alpha:1];
-//    alertView.contentViewWidth = 100;
-    
+    alertView.titleFont = [UIFont systemFontOfSize:15];
     [alertView setSelectedItemCallBack:^(NSString *title){
         NSLog(@"block :%@", title);
     }];
