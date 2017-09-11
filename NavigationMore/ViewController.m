@@ -49,7 +49,6 @@
 - (void) btnAddClicked:(UIButton *) sender{
     NSArray *data = @[@"扫一扫", @"添加设备"];
     GPAlertView *alertView   = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame titleArray:data imageNameArray:data];
-    alertView.headerViewAlignment = HeaderviewLocationLeft;
     alertView.target = (id <GPAlertViewDelegate>) self;
     [alertView show];
     [alertView setSelectedItemCallBack:^(NSString *title){
@@ -63,7 +62,7 @@
     alertView.target = (id <GPAlertViewDelegate>) self;
     alertView.backgroundColor = [UIColor orangeColor];
     [alertView show];
-    alertView.headerViewAlignment = HeaderviewLocationLeft;
+    alertView.headerViewAlignment = HeaderviewLocationRight;
     alertView.contentViewWidth = 100;
     alertView.tbCellHeight = 35;
     alertView.titleFont = [UIFont systemFontOfSize:15];
@@ -78,21 +77,23 @@
         NSIndexPath *indexPath = [_tbView indexPathForRowAtPoint:point];
         if(indexPath == nil) return ;
         
-        //        CGRect rectInTableView = [myTableView rectForRowAtIndexPath:indexPath];
-        //        CGRect cellRrect = [myTableView convertRect:rectInTableView toView:[myTableView superview]];
-        //        NSLog(@" %@", NSStringFromCGRect(rect));
+//        CGRect rectInTableView = [myTableView rectForRowAtIndexPath:indexPath];
+//        CGRect cellRrect = [myTableView convertRect:rectInTableView toView:[myTableView superview]];
+//        NSLog(@" %@", NSStringFromCGRect(rect));
         GPTableViewCell *cell = [_tbView cellForRowAtIndexPath:indexPath];
         
         // 获取cell中的子视图在屏幕上的位置
         CGRect rect1 = [cell.lb convertRect:cell.lb.frame fromView:cell.contentView];
         CGRect lbRrect = [cell.lb convertRect:rect1 toView:self.view];
-        //        NSLog(@"rect2 = %@", NSStringFromCGRect(lbRrect));
+//        NSLog(@"rect2 = %@", NSStringFromCGRect(lbRrect));
         
         NSArray *data = @[@"布防", @"修改名称", @"撤防", @"报警"];
         GPAlertView *alertView = [[GPAlertView alloc] initWithTableViewCell:lbRrect data:data indexPath:indexPath];
         alertView.titleFont = [UIFont systemFontOfSize:12];
-       // alertView.sanSize = CGSizeMake(10, 6.18);
-        //alertView.backgroundColor = [UIColor colorWithRed:40/255.0 green:170/255.0 blue:230/255.0 alpha:1];
+        if (indexPath.row % 2) {
+            alertView.backgroundColor = [UIColor colorWithRed:40/255.0 green:170/255.0 blue:230/255.0 alpha:1];
+            alertView.lineColor = [UIColor blackColor];
+        }
         alertView.target = (id <GPAlertViewDelegate>) self;
         [alertView show];
     }

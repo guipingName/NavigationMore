@@ -32,10 +32,7 @@ typedef NS_ENUM(NSInteger, HeaderviewLocation) {
 @property (nonatomic, strong) UIFont *titleFont;        // 文字大小 Default 17
 @property (nonatomic, assign) CGFloat contentViewWidth; // 单元格宽度（导航） Default 178
 @property (nonatomic, assign) CGFloat tbCellHeight;     // 单元格高度（导航） Default 60
-@property (nonatomic, assign) CGFloat collectionViewCellWidth; // 单元格宽度（cell） ?
-@property (nonatomic, assign) CGSize sanSize;           // 三角形的宽高 Default 20 10?
-@property (nonatomic, assign) CGFloat corneradius;      // 圆角 Default 5?
-@property (nonatomic, assign) HeaderviewLocation headerViewAlignment;
+@property (nonatomic, assign) HeaderviewLocation headerViewAlignment; // 三角形的位置（左中右）
 
 
 // 导航栏提示框（有图）

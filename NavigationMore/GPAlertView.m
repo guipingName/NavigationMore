@@ -35,6 +35,9 @@ typedef NS_ENUM(NSInteger, AlertViewMode) {
 @property (nonatomic, assign) AlertViewMode type;
 @property (nonatomic, strong) UIColor *bgColor;
 @property (nonatomic, assign) BOOL transformed;
+@property (nonatomic, assign) CGFloat collectionViewCellWidth; // 单元格宽度（cell） ?
+@property (nonatomic, assign) CGSize sanSize;           // 三角形的宽高 Default 20 10?
+@property (nonatomic, assign) CGFloat corneradius;      // 圆角 Default 5
 @end
 
 static NSString *tbViewIdentifier = @"tableViewIdentifier";
@@ -205,12 +208,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
         }
         else{
             _headerView.image = nil;
-            if (CGRectGetMinX(reItemRect) > ScreenWidth / 2) { // 右边的item
-                _contentView.frame = CGRectMake(ScreenWidth - 16 - _contentViewWidth, CGRectGetMaxY(_headerView.frame), _contentViewWidth, height);
-            }
-            else{
-                _contentView.frame = CGRectMake(16, CGRectGetMaxY(_headerView.frame), _contentViewWidth, height);
-            }
+            _contentView.frame = CGRectMake(CGRectGetMidX(_headerView.frame) - _contentViewWidth / 2, CGRectGetMaxY(_headerView.frame), _contentViewWidth, height);
             maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopRight|UIRectCornerTopLeft cornerRadii:CGSizeMake(_corneradius,_corneradius)];
         }
     }
@@ -235,15 +233,9 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     [self refresh];
 }
 
-
-
 -(void)setTitleFont:(UIFont *)titleFont{
     _titleFont = titleFont;
     [self refresh];
-}
-
-- (void)setSanSize:(CGSize)sanSize{
-    
 }
 
 -(void)setHeaderViewAlignment:(HeaderviewLocation)headerViewAlignment{
@@ -288,10 +280,6 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     else{
         _headerView.layerFillColor = _bgColor;
     }
-}
-
--(void)setCorneradius:(CGFloat)corneradius{
-    
 }
 
 - (void) refresh{
