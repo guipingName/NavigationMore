@@ -31,7 +31,7 @@
 
 
 // 导航栏提示框（有图）
-- (instancetype) initWithNavigationIItemRect:(CGRect)itemRect titleArray:(NSArray *) titleArray imageNameArray:(NSArray *) imageNameArray;
+- (instancetype) initWithNavigationItemRect:(CGRect)itemRect titleArray:(NSArray *) titleArray imageNameArray:(NSArray *) imageNameArray;
 
 // 导航栏提示框（无图）
 - (instancetype) initWithNavigationItemRect:(CGRect)itemRect data:(NSArray *) dataSource;

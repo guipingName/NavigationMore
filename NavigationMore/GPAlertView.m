@@ -47,7 +47,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     return [self initWithType:AlertViewModeNavigation Item:itemRect data:dataSource];
 }
 
--(instancetype)initWithNavigationIItemRect:(CGRect)itemRect titleArray:(NSArray *)titleArray imageNameArray:(NSArray *)imageNameArray{
+-(instancetype)initWithNavigationItemRect:(CGRect)itemRect titleArray:(NSArray *)titleArray imageNameArray:(NSArray *)imageNameArray{
     _imageNameSource = imageNameArray;
     if (titleArray.count != imageNameArray.count) {
         NSLog(@"文字和图片个数不一致");

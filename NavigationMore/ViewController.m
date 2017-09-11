@@ -48,7 +48,7 @@
 
 - (void) btnAddClicked:(UIButton *) sender{
     NSArray *data = @[@"扫一扫", @"添加设备"];
-    GPAlertView *alertView   = [[GPAlertView alloc] initWithNavigationIItemRect:sender.frame titleArray:data imageNameArray:data];
+    GPAlertView *alertView   = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame titleArray:data imageNameArray:data];
 //    alertView.alignment = NSTextAlignmentRight;
     alertView.target = (id <GPAlertViewDelegate>) self;
     [alertView show];
@@ -61,10 +61,10 @@
     NSArray *data = @[@"悟空", @"增强版", @"红外感应", @"智能门磁", @"海曼检测", @"S3网关", @"门栓"];
     GPAlertView *alertView = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame data:data];
     alertView.target = (id <GPAlertViewDelegate>) self;
-    alertView.contentViewWidth = 100;
     alertView.backgroundColor = [UIColor orangeColor];
     [alertView show];
-//    alertView.sanAlignment = NSTextAlignmentRight;
+    alertView.sanAlignment = NSTextAlignmentLeft;
+    alertView.contentViewWidth = 100;
 //    alertView.tbCellHeight = 35;
 //    alertView.titleFont = [UIFont systemFontOfSize:15];
 //    alertView.backgroundColor = [UIColor colorWithRed:40/255.0 green:170/255.0 blue:230/255.0 alpha:1];
