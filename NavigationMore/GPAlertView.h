@@ -15,7 +15,7 @@
 - (void)didSlectedItemWithTitle:(NSString *)title indexPath:(NSIndexPath *) indexPath;
 @end
 
-@class sanjiaoxingView;
+
 @interface GPAlertView : UIButton
 
 @property (nonatomic, weak) id <GPAlertViewDelegate> target;
@@ -45,7 +45,7 @@
 @end
 
 
-@interface sanjiaoxingView : UIImageView
+@interface HeaderView : UIImageView
 @property (nonatomic, assign) BOOL isOppsote;
 @property (nonatomic, strong) UIColor *layerFillColor;
 @end

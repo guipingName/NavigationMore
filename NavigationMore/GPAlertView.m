@@ -30,7 +30,7 @@ typedef NS_ENUM(NSInteger, AlertViewMode) {
 @property (nonatomic, strong) NSArray *dataSource;
 @property (nonatomic, strong) NSArray *imageNameSource;
 @property (nonatomic, strong) NSIndexPath *indexPath;
-@property (nonatomic, strong) sanjiaoxingView *sanjiaoxing;
+@property (nonatomic, strong) HeaderView *headerView;
 @property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, assign) AlertViewMode type;
 @property (nonatomic, strong) UIColor *bgColor;
@@ -89,8 +89,8 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
         
         _dataSource = dataSource;
         
-        _sanjiaoxing = [[sanjiaoxingView alloc] init];
-        [self addSubview:_sanjiaoxing];
+        _headerView = [[HeaderView alloc] init];
+        [self addSubview:_headerView];
         
         _contentView = [[UIView alloc] init];
         _contentView.backgroundColor = _bgColor;
@@ -135,13 +135,13 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
             {
                 _contentViewWidth = _dataSource.count > 4? _collectionViewCellWidth * 4 : _collectionViewCellWidth * dataSource.count;
                 if (itemRect.origin.y < 100) {
-                    _sanjiaoxing.frame = CGRectMake(CGRectGetMidX(itemRect) - _sanSize.width / 2, CGRectGetMaxY(itemRect), _sanSize.width, _sanSize.height);
-                    _contentView.frame = CGRectMake((ScreenWidth - _contentViewWidth) / 2, CGRectGetMaxY(_sanjiaoxing.frame), _contentViewWidth, 30);
+                    _headerView.frame = CGRectMake(CGRectGetMidX(itemRect) - _sanSize.width / 2, CGRectGetMaxY(itemRect), _sanSize.width, _sanSize.height);
+                    _contentView.frame = CGRectMake((ScreenWidth - _contentViewWidth) / 2, CGRectGetMaxY(_headerView.frame), _contentViewWidth, 30);
                 }
                 else{
-                    _sanjiaoxing.isOppsote = YES;
-                    _sanjiaoxing.frame = CGRectMake(CGRectGetMidX(itemRect) - _sanSize.width / 2, itemRect.origin.y - _sanSize.height, _sanSize.width, _sanSize.height);
-                    _contentView.frame = CGRectMake((ScreenWidth - _contentViewWidth) / 2, CGRectGetMinY(_sanjiaoxing.frame) - 30, _contentViewWidth, 30);
+                    _headerView.isOppsote = YES;
+                    _headerView.frame = CGRectMake(CGRectGetMidX(itemRect) - _sanSize.width / 2, itemRect.origin.y - _sanSize.height, _sanSize.width, _sanSize.height);
+                    _contentView.frame = CGRectMake((ScreenWidth - _contentViewWidth) / 2, CGRectGetMinY(_headerView.frame) - 30, _contentViewWidth, 30);
                 }
                 
                 maskLayer = [[CAShapeLayer alloc]init];
@@ -177,39 +177,39 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
 }
 
 - (void) sanFrame:(CGRect) frame{
-    _sanjiaoxing.frame = frame;
+    _headerView.frame = frame;
     UIImage *image = [[UIImage imageNamed:@"小三角"] rt_tintedImageWithColor:_bgColor];
-    _sanjiaoxing.image = image;
+    _headerView.image = image;
     
     CGFloat height = 0;
     if (_type == AlertViewModeNavigation) {
         height = _dataSource.count > 5 ? _tbCellHeight * 5 : _tbCellHeight *_dataSource.count;
         if (_sanAlignment == NSTextAlignmentRight) { // 三角形固定在右边
             if (_a ==3) {
-                _sanjiaoxing.transform = CGAffineTransformMakeScale(1.0, 1.0);
+                _headerView.transform = CGAffineTransformMakeScale(1.0, 1.0);
             }
-            for (CALayer *layer in _sanjiaoxing.layer.sublayers) {
+            for (CALayer *layer in _headerView.layer.sublayers) {
                 [layer removeFromSuperlayer];
             }
-            _contentView.frame = CGRectMake(CGRectGetMaxX(_sanjiaoxing.frame) - _contentViewWidth, CGRectGetMaxY(_sanjiaoxing.frame), _contentViewWidth, height);
+            _contentView.frame = CGRectMake(CGRectGetMaxX(_headerView.frame) - _contentViewWidth, CGRectGetMaxY(_headerView.frame), _contentViewWidth, height);
             maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopLeft cornerRadii:CGSizeMake(_corneradius,_corneradius)];
         }
         else if (_sanAlignment == NSTextAlignmentLeft) { //三角形固定在左边
             _a = 3;
-            for (CALayer *layer in _sanjiaoxing.layer.sublayers) {
+            for (CALayer *layer in _headerView.layer.sublayers) {
                 [layer removeFromSuperlayer];
             }
-            _sanjiaoxing.transform = CGAffineTransformMakeScale(-1.0, 1.0);
-            _contentView.frame = CGRectMake(CGRectGetMinX(_sanjiaoxing.frame), CGRectGetMaxY(_sanjiaoxing.frame), _contentViewWidth, height);
+            _headerView.transform = CGAffineTransformMakeScale(-1.0, 1.0);
+            _contentView.frame = CGRectMake(CGRectGetMinX(_headerView.frame), CGRectGetMaxY(_headerView.frame), _contentViewWidth, height);
             maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopRight cornerRadii:CGSizeMake(_corneradius,_corneradius)];
         }
         else{
-            _sanjiaoxing.image = nil;
+            _headerView.image = nil;
             if (CGRectGetMinX(reItemRect) > ScreenWidth / 2) { // 右边的item
-                _contentView.frame = CGRectMake(ScreenWidth - 16 - _contentViewWidth, CGRectGetMaxY(_sanjiaoxing.frame), _contentViewWidth, height);
+                _contentView.frame = CGRectMake(ScreenWidth - 16 - _contentViewWidth, CGRectGetMaxY(_headerView.frame), _contentViewWidth, height);
             }
             else{
-                _contentView.frame = CGRectMake(16, CGRectGetMaxY(_sanjiaoxing.frame), _contentViewWidth, height);
+                _contentView.frame = CGRectMake(16, CGRectGetMaxY(_headerView.frame), _contentViewWidth, height);
             }
             maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopRight|UIRectCornerTopLeft cornerRadii:CGSizeMake(_corneradius,_corneradius)];
         }
@@ -251,7 +251,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
 
 -(void)setSanAlignment:(NSTextAlignment)sanAlignment{
     _sanAlignment = sanAlignment;
-    CGRect frame = _sanjiaoxing.frame;
+    CGRect frame = _headerView.frame;
     [self sanFrame:frame];
 }
 
@@ -259,7 +259,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
 
 -(void)setTbCellHeight:(CGFloat)tbCellHeight{
     _tbCellHeight = tbCellHeight;
-    CGRect frame = _sanjiaoxing.frame;
+    CGRect frame = _headerView.frame;
     [self sanFrame:frame];
 }
 
@@ -267,19 +267,19 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     _contentViewWidth = contentViewWidth;
     if (_sanAlignment == NSTextAlignmentCenter) {
         if (CGRectGetMinX(reItemRect) > ScreenWidth / 2) { // 右边的item
-            if (CGRectGetMinX(_sanjiaoxing.frame) < ScreenWidth - 16 - _contentViewWidth) {
-                _contentViewWidth = ScreenWidth - 16 - CGRectGetMinX(_sanjiaoxing.frame);
+            if (CGRectGetMinX(_headerView.frame) < ScreenWidth - 16 - _contentViewWidth) {
+                _contentViewWidth = ScreenWidth - 16 - CGRectGetMinX(_headerView.frame);
                 _sanAlignment = NSTextAlignmentLeft;
             }
         }
         else{
-            if (_contentViewWidth < CGRectGetMaxX(_sanjiaoxing.frame) - 16) {
-                _contentViewWidth = CGRectGetMaxX(_sanjiaoxing.frame) - 16;
+            if (_contentViewWidth < CGRectGetMaxX(_headerView.frame) - 16) {
+                _contentViewWidth = CGRectGetMaxX(_headerView.frame) - 16;
                 _sanAlignment = NSTextAlignmentRight;
             }
         }
     }
-    CGRect frame = _sanjiaoxing.frame;
+    CGRect frame = _headerView.frame;
     [self sanFrame:frame];
 }
 
@@ -287,11 +287,11 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     [super setBackgroundColor:[UIColor clearColor]];
     _bgColor = backgroundColor;
     _contentView.backgroundColor = _bgColor;
-    if (_sanjiaoxing.image) {
-        _sanjiaoxing.image = [[UIImage imageNamed:@"小三角"] rt_tintedImageWithColor:_bgColor];
+    if (_headerView.image) {
+        _headerView.image = [[UIImage imageNamed:@"小三角"] rt_tintedImageWithColor:_bgColor];
     }
     else{
-        _sanjiaoxing.layerFillColor = _bgColor;
+        _headerView.layerFillColor = _bgColor;
     }
 }
 
@@ -473,13 +473,13 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
 
 @end
 
-@interface sanjiaoxingView()
+@interface HeaderView()
 
 @property (nonatomic, strong) CAShapeLayer *sanlayer;
 
 @end
 
-@implementation sanjiaoxingView
+@implementation HeaderView
 
 -(instancetype)init{
     if (self = [super init]) {
