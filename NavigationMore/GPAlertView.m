@@ -34,8 +34,7 @@ typedef NS_ENUM(NSInteger, AlertViewMode) {
 @property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, assign) AlertViewMode type;
 @property (nonatomic, strong) UIColor *bgColor;
-//@property (nonatomic, assign) SanAlignment sanAlignment;
-@property (nonatomic, assign) NSUInteger a;
+@property (nonatomic, assign) BOOL transformed;
 @end
 
 static NSString *tbViewIdentifier = @"tableViewIdentifier";
@@ -73,13 +72,14 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
         // 默认值
         _bgColor = [UIColor blackColor];
         _textColor = [UIColor whiteColor];
+        _lineColor = [UIColor whiteColor];
         _titleFont = [UIFont systemFontOfSize:17];
         _tbCellHeight = 60.0f;
         _collectionViewCellWidth = 60.0f;
         _contentViewWidth = 178.0f;
         _sanSize = CGSizeMake(18, 10.5); // 原图大小 36 * 21
         _corneradius = 5;
-        _sanAlignment = NSTextAlignmentCenter;
+        _headerViewAlignment = HeaderviewLocationCenter;
         
         reItemRect = itemRect;
         _type = type;
@@ -103,12 +103,12 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
                 
                 if (sanX > 300) { // 需要修改
                     CGRect sanRect = CGRectMake(CGRectGetMaxX(itemRect) - 12 - _sanSize.width, orgY, _sanSize.width, _sanSize.height);
-                    _sanAlignment = NSTextAlignmentRight;
+                    _headerViewAlignment = HeaderviewLocationRight;
                     [self sanFrame:sanRect];
                 }
                 else if (sanX < 50){ // 需要修改
                     CGRect sanRect = CGRectMake(16, orgY, _sanSize.width, _sanSize.height);
-                    _sanAlignment = NSTextAlignmentLeft;
+                    _headerViewAlignment = HeaderviewLocationLeft;
                     [self sanFrame:sanRect];
                 }
                 else{
@@ -139,7 +139,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
                     _contentView.frame = CGRectMake((ScreenWidth - _contentViewWidth) / 2, CGRectGetMaxY(_headerView.frame), _contentViewWidth, 30);
                 }
                 else{
-                    _headerView.isOppsote = YES;
+                    _headerView.isOpposite = YES;
                     _headerView.frame = CGRectMake(CGRectGetMidX(itemRect) - _sanSize.width / 2, itemRect.origin.y - _sanSize.height, _sanSize.width, _sanSize.height);
                     _contentView.frame = CGRectMake((ScreenWidth - _contentViewWidth) / 2, CGRectGetMinY(_headerView.frame) - 30, _contentViewWidth, 30);
                 }
@@ -184,8 +184,8 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     CGFloat height = 0;
     if (_type == AlertViewModeNavigation) {
         height = _dataSource.count > 5 ? _tbCellHeight * 5 : _tbCellHeight *_dataSource.count;
-        if (_sanAlignment == NSTextAlignmentRight) { // 三角形固定在右边
-            if (_a ==3) {
+        if (_headerViewAlignment == NSTextAlignmentRight) { // 三角形固定在右边
+            if (_transformed) {
                 _headerView.transform = CGAffineTransformMakeScale(1.0, 1.0);
             }
             for (CALayer *layer in _headerView.layer.sublayers) {
@@ -194,8 +194,8 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
             _contentView.frame = CGRectMake(CGRectGetMaxX(_headerView.frame) - _contentViewWidth, CGRectGetMaxY(_headerView.frame), _contentViewWidth, height);
             maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopLeft cornerRadii:CGSizeMake(_corneradius,_corneradius)];
         }
-        else if (_sanAlignment == NSTextAlignmentLeft) { //三角形固定在左边
-            _a = 3;
+        else if (_headerViewAlignment == NSTextAlignmentLeft) { //三角形固定在左边
+            _transformed = YES;
             for (CALayer *layer in _headerView.layer.sublayers) {
                 [layer removeFromSuperlayer];
             }
@@ -227,30 +227,27 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
 #pragma mark ---------setter方法------------
 - (void)setTextColor:(UIColor *)textColor{
     _textColor = textColor;
-    if (tbView) {
-        [tbView reloadData];
-    }
-    else{
-        [colorCollectionView reloadData];
-    }
+    [self refresh];
 }
+
+-(void)setLineColor:(UIColor *)lineColor{
+    _lineColor = lineColor;
+    [self refresh];
+}
+
+
 
 -(void)setTitleFont:(UIFont *)titleFont{
     _titleFont = titleFont;
-    if (tbView) {
-        [tbView reloadData];
-    }
-    else{
-        [colorCollectionView reloadData];
-    }
+    [self refresh];
 }
 
 - (void)setSanSize:(CGSize)sanSize{
     
 }
 
--(void)setSanAlignment:(NSTextAlignment)sanAlignment{
-    _sanAlignment = sanAlignment;
+-(void)setSanAlignment:(HeaderviewLocation)headerViewAlignment{
+    _headerViewAlignment = headerViewAlignment;
     CGRect frame = _headerView.frame;
     [self sanFrame:frame];
 }
@@ -265,17 +262,17 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
 
 -(void)setContentViewWidth:(CGFloat)contentViewWidth{
     _contentViewWidth = contentViewWidth;
-    if (_sanAlignment == NSTextAlignmentCenter) {
+    if (_headerViewAlignment == NSTextAlignmentCenter) {
         if (CGRectGetMinX(reItemRect) > ScreenWidth / 2) { // 右边的item
             if (CGRectGetMinX(_headerView.frame) < ScreenWidth - 16 - _contentViewWidth) {
                 _contentViewWidth = ScreenWidth - 16 - CGRectGetMinX(_headerView.frame);
-                _sanAlignment = NSTextAlignmentLeft;
+                _headerViewAlignment = HeaderviewLocationLeft;
             }
         }
         else{
             if (_contentViewWidth < CGRectGetMaxX(_headerView.frame) - 16) {
                 _contentViewWidth = CGRectGetMaxX(_headerView.frame) - 16;
-                _sanAlignment = NSTextAlignmentRight;
+                _headerViewAlignment = HeaderviewLocationRight;
             }
         }
     }
@@ -300,7 +297,12 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
 }
 
 - (void) refresh{
-    
+    if (tbView) {
+        [tbView reloadData];
+    }
+    else{
+        [colorCollectionView reloadData];
+    }
 }
 
 
@@ -371,7 +373,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
         if (indexPath.row < _dataSource.count - 1) {
             UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, _tbCellHeight - 1, 178, 1)];
             [cell.contentView addSubview:lineView];
-            lineView.backgroundColor = [_textColor colorWithAlphaComponent:0.7];
+            lineView.backgroundColor = [_lineColor colorWithAlphaComponent:0.7];
         }
     }
     
@@ -437,7 +439,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     if (indexPath.row < _dataSource.count - 1) {
         UIView *line = [[UIView alloc] initWithFrame:CGRectMake(_collectionViewCellWidth - 1, 0, 1, 30)];
         [cell.contentView addSubview:line];
-        line.backgroundColor = _textColor;
+        line.backgroundColor = _lineColor;
     }
     return cell;
 }
@@ -483,7 +485,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
 
 -(instancetype)init{
     if (self = [super init]) {
-        _isOppsote = NO;
+        _isOpposite = NO;
         _layerFillColor = [UIColor blackColor];
     }
     return self;
@@ -501,7 +503,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
 //    }
     [_sanlayer removeFromSuperlayer];
     UIBezierPath *path = [[UIBezierPath alloc] init];
-    if (!_isOppsote) {
+    if (!_isOpposite) {
         // 三角形顶角在上
         [path moveToPoint:CGPointMake(0, self.bounds.size.height)];
         [path addLineToPoint:CGPointMake(self.bounds.size.width / 2, 0)];

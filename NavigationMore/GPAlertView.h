@@ -8,6 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
+
+typedef NS_ENUM(NSInteger, HeaderviewLocation) {
+    HeaderviewLocationLeft,
+    HeaderviewLocationCenter,
+    HeaderviewLocationRight,
+};
+
 @class GPAlertView;
 @protocol GPAlertViewDelegate <NSObject>
 @optional
@@ -21,13 +28,14 @@
 @property (nonatomic, weak) id <GPAlertViewDelegate> target;
 @property (nonatomic, copy) void(^selectedItemCallBack)(NSString *title);
 @property (nonatomic, strong) UIColor *textColor;       // 文字颜色 Default whiteColor
+@property (nonatomic, strong) UIColor *lineColor;       // 线条颜色 Default whiteColor
 @property (nonatomic, strong) UIFont *titleFont;        // 文字大小 Default 17
 @property (nonatomic, assign) CGFloat contentViewWidth; // 单元格宽度（导航） Default 178
 @property (nonatomic, assign) CGFloat tbCellHeight;     // 单元格高度（导航） Default 60
 @property (nonatomic, assign) CGFloat collectionViewCellWidth; // 单元格宽度（cell） ?
 @property (nonatomic, assign) CGSize sanSize;           // 三角形的宽高 Default 20 10?
 @property (nonatomic, assign) CGFloat corneradius;      // 圆角 Default 5?
-@property (nonatomic, assign) NSTextAlignment sanAlignment;
+@property (nonatomic, assign) HeaderviewLocation headerViewAlignment;
 
 
 // 导航栏提示框（有图）
@@ -46,7 +54,7 @@
 
 
 @interface HeaderView : UIImageView
-@property (nonatomic, assign) BOOL isOppsote;
+@property (nonatomic, assign) BOOL isOpposite;
 @property (nonatomic, strong) UIColor *layerFillColor;
 @end
 
