@@ -65,7 +65,7 @@
     [alertView show];
     alertView.headerViewAlignment = HeaderviewLocationLeft;
     alertView.contentViewWidth = 100;
-//    alertView.tbCellHeight = 35;
+    alertView.tbCellHeight = 35;
 //    alertView.titleFont = [UIFont systemFontOfSize:15];
 //    alertView.backgroundColor = [UIColor colorWithRed:40/255.0 green:170/255.0 blue:230/255.0 alpha:1];
 //    alertView.contentViewWidth = 100;

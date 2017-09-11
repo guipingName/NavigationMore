@@ -217,7 +217,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     else{
         
     }
-    
+    tbView.frame = _contentView.bounds;
     maskLayer = [[CAShapeLayer alloc]init];
     maskLayer.frame = _contentView.bounds;
     maskLayer.path = maskPath.CGPath;
@@ -251,8 +251,6 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     CGRect frame = _headerView.frame;
     [self sanFrame:frame];
 }
-
-
 
 -(void)setTbCellHeight:(CGFloat)tbCellHeight{
     _tbCellHeight = tbCellHeight;
