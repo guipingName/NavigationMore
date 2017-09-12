@@ -72,6 +72,9 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
         self.backgroundColor = [UIColor clearColor];
         //NSLog(@"源 %@", NSStringFromCGRect(itemRect));
         
+        _dataSource = dataSource;
+        
+        
         // 默认值
         _bgColor = [UIColor blackColor];
         _textColor = [UIColor whiteColor];
@@ -83,6 +86,15 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
         _sanSize = CGSizeMake(18, 10.5); // 原图大小 36 * 21
         _corneradius = 5;
         _headerViewAlignment = HeaderviewLocationCenter;
+        if (_imageNameSource) {
+            _imgFrame = CGRectMake(14, 14, 32, 32);
+            _lbTitleFrame = CGRectMake(58, 0, _contentViewWidth - 58, _tbCellHeight);
+        }
+        else{
+            _lbTitleFrame = CGRectMake(10, 0, _contentViewWidth - 10, _tbCellHeight);
+        }
+        _cellNumbersMax = 3;
+        
         
         reItemRect = itemRect;
         _type = type;
@@ -90,7 +102,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
         
         [self addTarget:self action:@selector(tapClick) forControlEvents:UIControlEventTouchUpInside];
         
-        _dataSource = dataSource;
+        
         
         _headerView = [[HeaderView alloc] init];
         [self addSubview:_headerView];
@@ -103,7 +115,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
             {
                 CGFloat orgY = itemRect.origin.y <= 7 ? 65 : CGRectGetMaxY(itemRect);
                 CGFloat sanX = CGRectGetMidX(itemRect) - _sanSize.width / 2;
-                if (CGRectGetMidX(itemRect) > 340) {
+                if (CGRectGetMidX(itemRect) > ScreenWidth - 35) {
                     CGRect sanRect = CGRectMake(CGRectGetMaxX(itemRect) - 12 - _sanSize.width, orgY, _sanSize.width, _sanSize.height);
                     _headerViewAlignment = HeaderviewLocationRight;
                     [self setHeaderViewFrame:sanRect];
@@ -122,7 +134,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
                 tbView = [[UITableView alloc] initWithFrame:_contentView.bounds];
                 tbView.backgroundColor = [UIColor clearColor];
                 tbView.separatorStyle = UITableViewCellSeparatorStyleNone;
-                if (_dataSource.count < 6) {
+                if (_dataSource.count < _cellNumbersMax + 1) {
                     tbView.scrollEnabled = NO;
                 }
                 [_contentView addSubview:tbView];
@@ -183,7 +195,7 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     
     CGFloat height = 0;
     if (_type == AlertViewModeNavigation) {
-        height = _dataSource.count > 5 ? _tbCellHeight * 5 : _tbCellHeight *_dataSource.count;
+        height = _dataSource.count > _cellNumbersMax ? _tbCellHeight * _cellNumbersMax : _tbCellHeight *_dataSource.count;
         if (_headerViewAlignment == NSTextAlignmentRight) { // 三角形固定在右边
             if (_transformed) {
                 _headerView.transform = CGAffineTransformMakeScale(1.0, 1.0);
@@ -241,9 +253,24 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     [self setHeaderViewFrame:frame];
 }
 
+-(void)setCellNumbersMax:(NSUInteger)cellNumbersMax{
+    _cellNumbersMax = cellNumbersMax;
+    CGRect frame = _headerView.frame;
+    [self setHeaderViewFrame:frame];
+    if (_dataSource.count < _cellNumbersMax +1) {
+        tbView.scrollEnabled = NO;
+    }
+    else{
+        tbView.scrollEnabled = YES;
+    }
+    [self refresh];
+}
+
 -(void)setTbCellHeight:(CGFloat)tbCellHeight{
     _tbCellHeight = tbCellHeight;
     CGRect frame = _headerView.frame;
+    CGRect lbTRect = _lbTitleFrame;
+    _lbTitleFrame = CGRectMake(lbTRect.origin.x, lbTRect.origin.y, lbTRect.size.width, lbTRect.size.height < _tbCellHeight?lbTRect.size.height:_tbCellHeight);
     [self setHeaderViewFrame:frame];
 }
 
@@ -263,6 +290,16 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     else{
         _headerView.layerFillColor = _bgColor;
     }
+}
+
+- (void)setImgFrame:(CGRect)imgFrame{
+    _imgFrame = imgFrame;
+    [self refresh];
+}
+
+-(void)setLbTitleFrame:(CGRect)lbTitleFrame{
+    _lbTitleFrame = lbTitleFrame;
+    [self refresh];
 }
 
 - (void) refresh{
@@ -324,17 +361,17 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:tbViewIdentifier];
         if (_imageNameSource) {
-            UIImageView *imView = [[UIImageView alloc] initWithFrame:CGRectMake(14, 14, 32, 32)];
+            UIImageView *imView = [[UIImageView alloc] initWithFrame:_imgFrame];
                 [cell.contentView addSubview:imView];
             imView.tag = 400;
             [cell.contentView addSubview:imView];
             
-            UILabel *ctrlTitleLable = [[UILabel alloc] initWithFrame:CGRectMake(58, 0, 120, _tbCellHeight)];
+            UILabel *ctrlTitleLable = [[UILabel alloc] initWithFrame:_lbTitleFrame];
             ctrlTitleLable.tag = 401;
             [cell.contentView addSubview:ctrlTitleLable];
         }
         else{
-            UILabel *ctrlTitleLable = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 120, _tbCellHeight)];
+            UILabel *ctrlTitleLable = [[UILabel alloc] initWithFrame:_lbTitleFrame];
             ctrlTitleLable.tag = 401;
             [cell.contentView addSubview:ctrlTitleLable];
         }
@@ -381,6 +418,14 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     [tableview deselectRowAtIndexPath:indexPath animated:YES];
     NSString *title = _dataSource[indexPath.row];
     [self didSlectedItem:title];
+}
+
+- (void)onSelectRowWithTitleCallBack:(void(^)(NSString *title))callBack{
+    if (callBack) {
+        self.selectedItemCallBack = ^(NSString *title){
+            callBack(title);
+        };
+    }
 }
 
 - (void) didSlectedItem:(NSString *) title{

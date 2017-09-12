@@ -51,7 +51,10 @@
     alertView.target = (id <GPAlertViewDelegate>) self;
     [alertView show];
     alertView.headerViewAlignment = HeaderviewLocationRight;
-    [alertView setSelectedItemCallBack:^(NSString *title){
+//    [alertView setSelectedItemCallBack:^(NSString *title){
+//        NSLog(@"block :%@", title);
+//    }];
+    [alertView onSelectRowWithTitleCallBack:^(NSString *title) {
         NSLog(@"block :%@", title);
     }];
 }
@@ -63,7 +66,9 @@
     alertView.backgroundColor = [UIColor orangeColor];
     [alertView show];
     alertView.contentViewWidth = 100;
+    alertView.cellNumbersMax = 5;
     alertView.tbCellHeight = 35;
+    
     alertView.titleFont = [UIFont systemFontOfSize:15];
     [alertView setSelectedItemCallBack:^(NSString *title){
         NSLog(@"block :%@", title);
