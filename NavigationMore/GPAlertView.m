@@ -1,21 +1,16 @@
 //
-//  GPAlertView.m
-//  smartHome
+//  GPMoreView.m
+//  NavigationMore
 //
-//  Created by guiping on 2017/9/11.
-//  Copyright © 2017年 galaxywind. All rights reserved.
+//  Created by guiping on 2017/9/15.
+//  Copyright © 2017年 pingui. All rights reserved.
 //
 
 #import "GPAlertView.h"
 
 #define SCREEN_SIZE [UIScreen mainScreen].bounds.size
 
-
-typedef NS_ENUM(NSInteger, AlertViewMode) {
-    AlertViewModeNavigation,    // 导航
-    AlertViewModeCell,          // cell
-};
-
+static NSString *tbViewIdentifier = @"tbViewIdentifier";
 
 @interface GPAlertView()
 {
@@ -34,10 +29,11 @@ typedef NS_ENUM(NSInteger, AlertViewMode) {
 @property (nonatomic, strong) NSArray *dataSource;
 @property (nonatomic, strong) NSArray *imageNameSource;
 @property (nonatomic, strong) NSIndexPath *indexPath;
-@property (nonatomic, strong) GpHeaderView *headerView;
 @property (nonatomic, strong) UIView *contentView;
-@property (nonatomic, assign) AlertViewMode type;
+@property (nonatomic, strong) BgView *bgView;
+@property (nonatomic, strong) UIImageView *trangleView;
 @property (nonatomic, strong) UIColor *bgColor;
+@property (nonatomic, assign) CGRect customFrame;
 @property (nonatomic, assign) BOOL transformed;
 @property (nonatomic, assign) CGFloat collectionViewCellWidth; // 单元格宽度（cell） ?
 @property (nonatomic, assign) CGSize sanSize;           // 三角形的宽高 Default 12 7
@@ -45,11 +41,14 @@ typedef NS_ENUM(NSInteger, AlertViewMode) {
 @property (nonatomic, assign) CGFloat middleDistance;      // 到三角形中心的距离（仅当headerViewAligenmentCenter有效）
 @end
 
-static NSString *tbViewIdentifier = @"tableViewIdentifier";
-static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
-
 
 @implementation GPAlertView
+
+- (void) showInViewController:(UIViewController *) viewController{
+    _superController = viewController;
+    //self.target = (id<GPAlertViewDelegate>)viewController;
+    [[UIApplication sharedApplication].keyWindow addSubview:self];
+}
 
 -(instancetype)initWithNavigationItemRect:(CGRect)itemRect titleArray:(NSArray *)titleArray imageNameArray:(NSArray *)imageNameArray{
     _imageNameSource = imageNameArray;
@@ -57,14 +56,14 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
         NSLog(@"文字和图片个数不一致");
         return  nil;
     }
-    return [self initWithType:AlertViewModeNavigation Item:itemRect data:titleArray];
+    return [self initWithTypeItem:itemRect data:titleArray];
 }
 
 - (instancetype) initWithNavigationItemRect:(CGRect)itemRect titleArray:(NSArray *) titleArray{
-    return [self initWithType:AlertViewModeNavigation Item:itemRect data:titleArray];
+    return [self initWithTypeItem:itemRect data:titleArray];
 }
 
-- (instancetype)initWithType:(AlertViewMode) type Item:(CGRect)itemRect data:(NSArray *) dataSource {
+- (instancetype)initWithTypeItem:(CGRect)itemRect data:(NSArray *) dataSource {
     if (!dataSource || dataSource.count == 0) {
         NSLog(@"********传入的数据源****有误********");
         return nil;
@@ -75,7 +74,6 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
         
         _dataSource = dataSource;
         
-        
         // 默认值
         _bgColor = [[UIColor blackColor] colorWithAlphaComponent:0.85];
         _textColor = [UIColor whiteColor];
@@ -83,10 +81,9 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
         _titleFont = [UIFont systemFontOfSize:17];
         _tbCellHeight = 60.0f;
         _collectionViewCellWidth = 60.0f;
-        _contentViewWidth = 178.0f;
+        _contentViewWidth = 150.0f;
         _sanSize = CGSizeMake(12, 7); // 原图大小 36 * 21
         _corneradius = 5;
-        _headerViewAlignment = HeaderviewLocationCenter;
         _middleDistance = 0.0f;
         if (_imageNameSource) {
             _imgFrame = CGRectMake(14, 14, 32, 32);
@@ -99,156 +96,78 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
         
         
         reItemRect = itemRect;
-        _type = type;
         self.frame = CGRectMake(0, 0, SCREEN_SIZE.width, SCREEN_SIZE.height);
         [self addTarget:self action:@selector(tapClick) forControlEvents:UIControlEventTouchUpInside];
+        CGFloat height = _dataSource.count > _cellNumbersMax ? _tbCellHeight * _cellNumbersMax : _tbCellHeight *_dataSource.count;
         
         
-        
-        _headerView = [[GpHeaderView alloc] init];
-        [self addSubview:_headerView];
+        _bgView = [[BgView alloc] initWithFrame:CGRectMake(0, 0, _contentViewWidth, height + 7)];
+        [self addSubview:_bgView];
+        _bgView.backgroundColor = [UIColor clearColor];
         
         _contentView = [[UIView alloc] init];
         _contentView.backgroundColor = _bgColor;
+        [_bgView addSubview:_contentView];
+        _trangleView = [[UIImageView alloc] init];
+        _trangleView.backgroundColor = _bgColor;
+        [_bgView addSubview:_trangleView];
         
-        switch (type) {
-            case AlertViewModeNavigation:
-            {
-                CGFloat orgY = itemRect.origin.y <= 7 ? 64 : CGRectGetMaxY(itemRect);//  系统创建的item的Y=7
-                if (CGRectGetMidX(itemRect) > SCREEN_SIZE.width - 35) {
-                    CGRect headerViewRect = CGRectMake(SCREEN_SIZE.width - 16 - _sanSize.width, orgY, _sanSize.width, _sanSize.height);
-                    _headerViewAlignment = HeaderviewLocationRight;
-                    [self setHeaderViewFrame:headerViewRect];
-                }
-                else if (CGRectGetMidX(itemRect) < 35){
-                    CGRect headerViewRect = CGRectMake(16, orgY, _sanSize.width, _sanSize.height);
-                    _headerViewAlignment = HeaderviewLocationLeft;
-                    [self setHeaderViewFrame:headerViewRect];
-                }
-                else{
-                    CGFloat orgX = CGRectGetMidX(itemRect) - _sanSize.width / 2;
-                    CGRect headerViewRect = CGRectMake(orgX, orgY, _sanSize.width, _sanSize.height);
-                    [self setHeaderViewFrame:headerViewRect];
-                }
+        if (itemRect.origin.y < SCREEN_SIZE.height - CGRectGetHeight(_bgView.bounds)) {//箭头在上
+            //_contentView.frame = CGRectMake(0, 7, _bgView.bounds.size.width, _bgView.bounds.size.height - 7);
+            if (CGRectGetMidX(itemRect) > SCREEN_SIZE.width - 35) { // 右边
+                _headerViewAlignment = GPHeaderviewLocationRight;
+                [self setfrssssss];
                 
-                // 内容展示
-                tbView = [[UITableView alloc] initWithFrame:_contentView.bounds];
-                tbView.backgroundColor = [UIColor clearColor];
-                tbView.separatorStyle = UITableViewCellSeparatorStyleNone;
-                if (_dataSource.count < _cellNumbersMax + 1) {
-                    tbView.scrollEnabled = NO;
-                }
-                [_contentView addSubview:tbView];
-                tbView.dataSource = (id<UITableViewDataSource>)self;
-                tbView.delegate = (id<UITableViewDelegate>)self;
             }
-                break;
-            case AlertViewModeCell:
-            {
-                _contentViewWidth = _dataSource.count > 4? _collectionViewCellWidth * 4 : _collectionViewCellWidth * dataSource.count;
-                if (itemRect.origin.y < 100) {
-                    _headerView.frame = CGRectMake(CGRectGetMidX(itemRect) - _sanSize.width / 2, CGRectGetMaxY(itemRect), _sanSize.width, _sanSize.height);
-                    _contentView.frame = CGRectMake((SCREEN_SIZE.width - _contentViewWidth) / 2, CGRectGetMaxY(_headerView.frame), _contentViewWidth, 30);
-                }
-                else{
-                    _headerView.isOpposite = YES;
-                    _headerView.frame = CGRectMake(CGRectGetMidX(itemRect) - _sanSize.width / 2, itemRect.origin.y - _sanSize.height, _sanSize.width, _sanSize.height);
-                    _contentView.frame = CGRectMake((SCREEN_SIZE.width - _contentViewWidth) / 2, CGRectGetMinY(_headerView.frame) - 30, _contentViewWidth, 30);
-                }
-                
-                maskLayer = [[CAShapeLayer alloc]init];
-                maskLayer.frame = _contentView.bounds;
-                
-                maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopLeft |UIRectCornerTopRight cornerRadii:CGSizeMake(_corneradius,_corneradius)];
-                maskLayer.path = maskPath.CGPath;
-                _contentView.layer.mask = maskLayer;
-                
-                // 内容展示
-                UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
-                layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-                layout.minimumLineSpacing = 0;
-                layout.itemSize = CGSizeMake(_collectionViewCellWidth, 30);
-                layout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
-                
-                colorCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, _contentView.bounds.size.width, _contentView.bounds.size.height) collectionViewLayout:layout];
-                colorCollectionView.backgroundColor = [UIColor clearColor];
-                colorCollectionView.bounces = NO;
-                colorCollectionView.showsHorizontalScrollIndicator = NO;
-                [_contentView addSubview:colorCollectionView];
-                
-                [colorCollectionView registerClass:[itemCell class] forCellWithReuseIdentifier:cwViewIdentifier];
-                colorCollectionView.dataSource = (id<UICollectionViewDataSource>)self;;
-                colorCollectionView.delegate = (id<UICollectionViewDelegate>)self;
+            else if (CGRectGetMidX(itemRect) < 35){ // 左边
+                _headerViewAlignment = GPHeaderviewLocationLeft;
+                [self setfrssssss];
             }
-            default:
-                break;
+            else{ // 中间
+                _headerViewAlignment = GPHeaderviewLocationCenter;
+                [self setfrssssss];
+            }
         }
-        [self addSubview:_contentView];
+        else{ // 箭头在下
+            CGRect bgframe = _bgView.frame;
+            bgframe.origin.y = CGRectGetMinY(itemRect) - bgframe.size.height;//  系统创建的item的Y=7
+            if (CGRectGetMidX(itemRect) > SCREEN_SIZE.width - 35) { // 右边
+                _headerViewAlignment = GPHeaderviewLocationRight;
+                [self setfrssssss];
+            }
+            else if (CGRectGetMidX(itemRect) < 35){ // 左边
+                _headerViewAlignment = GPHeaderviewLocationLeft;
+                [self setfrssssss];
+            } // 中间
+            else{
+                _headerViewAlignment = GPHeaderviewLocationCenter;
+                [self setfrssssss];
+            }
+            _bgView.frame = bgframe;
+        }
+        
+        // 内容展示
+        tbView = [[UITableView alloc] initWithFrame:_contentView.bounds];
+        tbView.backgroundColor = [UIColor clearColor];
+        tbView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        if (_dataSource.count < _cellNumbersMax + 1) {
+            tbView.scrollEnabled = NO;
+        }
+        [_contentView addSubview:tbView];
+        _bgView.layer.masksToBounds = YES;
+        tbView.dataSource = (id<UITableViewDataSource>)self;
+        tbView.delegate = (id<UITableViewDelegate>)self;
     }
     return self;
 }
 
-- (void) setHeaderViewFrame:(CGRect) frame{
-    _headerView.frame = frame;
-    //UIImage *image = ThemeImageWithUIColor(@"小三角",_bgColor);
-    UIImage *image = [UIImage imageNamed:@"小三角"];
-    _headerView.image = image;
-    
-    CGFloat height = 0;
-    if (_type == AlertViewModeNavigation) {
-        height = _dataSource.count > _cellNumbersMax ? _tbCellHeight * _cellNumbersMax : _tbCellHeight *_dataSource.count;
-        if (_headerViewAlignment == NSTextAlignmentRight) { // 三角形固定在右边
-            if (_transformed) {
-                _headerView.transform = CGAffineTransformMakeScale(1.0, 1.0);
-            }
-            for (CALayer *layer in _headerView.layer.sublayers) {
-                [layer removeFromSuperlayer];
-            }
-            _contentView.frame = CGRectMake(CGRectGetMaxX(_headerView.frame) - _contentViewWidth, CGRectGetMaxY(_headerView.frame), _contentViewWidth, height);
-            maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopLeft cornerRadii:CGSizeMake(_corneradius,_corneradius)];
-        }
-        else if (_headerViewAlignment == NSTextAlignmentLeft) { //三角形固定在左边
-            _transformed = YES;
-            for (CALayer *layer in _headerView.layer.sublayers) {
-                [layer removeFromSuperlayer];
-            }
-            _headerView.transform = CGAffineTransformMakeScale(-1.0, 1.0);
-            _contentView.frame = CGRectMake(CGRectGetMinX(_headerView.frame), CGRectGetMaxY(_headerView.frame), _contentViewWidth, height);
-            maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopRight cornerRadii:CGSizeMake(_corneradius,_corneradius)];
-        }
-        else{
-            _headerView.image = nil;
-            _contentView.frame = CGRectMake(CGRectGetMidX(_headerView.frame) - _contentViewWidth / 2 + _middleDistance, CGRectGetMaxY(_headerView.frame), _contentViewWidth, height);
-            maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopRight|UIRectCornerTopLeft cornerRadii:CGSizeMake(_corneradius,_corneradius)];
-        }
-    }
-    else{
-        
-    }
-    tbView.frame = _contentView.bounds;
-    maskLayer = [[CAShapeLayer alloc]init];
-    maskLayer.frame = _contentView.bounds;
-    maskLayer.path = maskPath.CGPath;
-    _contentView.layer.mask = maskLayer;
-}
-
-- (void) showInViewController:(UIViewController *) viewController{
-    _superController = viewController;
-    //self.target = (id<GPAlertViewDelegate>)viewController;
-    [[UIApplication sharedApplication].keyWindow addSubview:self];
-}
-
-- (void)tapClick
-{
-    [UIView animateWithDuration:0.5 animations:^{
-        self.alpha = 0;
-    } completion:^(BOOL finished) {
-        self.alpha = 1.0f;
-        [self removeFromSuperview];
-    }];
-}
-
 #pragma mark ---------setter方法------------
+- (void) refresh{
+    if (tbView) {
+        [tbView reloadData];
+    }
+}
+
 - (void)setTextColor:(UIColor *)textColor{
     _textColor = textColor;
     [self refresh];
@@ -264,34 +183,11 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     [self refresh];
 }
 
--(void)setHeaderViewAlignment:(HeaderviewLocation)headerViewAlignment{
-    CGRect frame = _headerView.frame;
-    if (_headerViewAlignment == HeaderviewLocationCenter) {
-        if (headerViewAlignment == HeaderviewLocationRight) {
-            frame.origin.x = CGRectGetMaxX(reItemRect) - _sanSize.width;
-        }
-        else{
-            frame.origin.x = CGRectGetMinX(reItemRect);
-        }
-    }
-    _headerViewAlignment = headerViewAlignment;
-    [self setHeaderViewFrame:frame];
-}
-
-
--(void)setHeaderviewLocationCenterDistance:(CGFloat) distance{
-    if (_headerViewAlignment != HeaderviewLocationCenter) {
-        return;
-    }
-    _middleDistance = distance;
-    CGRect frame = _headerView.frame;
-    [self setHeaderViewFrame:frame];
-}
-
 -(void)setCellNumbersMax:(NSUInteger)cellNumbersMax{
     _cellNumbersMax = cellNumbersMax;
-    CGRect frame = _headerView.frame;
-    [self setHeaderViewFrame:frame];
+    CGFloat height = _dataSource.count > _cellNumbersMax ? _tbCellHeight * _cellNumbersMax : _tbCellHeight *_dataSource.count;
+    _bgView.frame = CGRectMake(0, 0, _contentViewWidth, height + 7);
+    [self setfrssssss];
     if (_dataSource.count < _cellNumbersMax +1) {
         tbView.scrollEnabled = NO;
     }
@@ -301,41 +197,39 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     [self refresh];
 }
 
+-(void)setHeaderViewAlignment:(GPHeaderviewLocation)headerViewAlignment{
+    _headerViewAlignment = headerViewAlignment;
+    [self setfrssssss];
+}
+
 -(void)setTbCellHeight:(CGFloat)tbCellHeight{
     _tbCellHeight = tbCellHeight;
-    CGRect frame = _headerView.frame;
+    CGFloat height = _dataSource.count > _cellNumbersMax ? _tbCellHeight * _cellNumbersMax : _tbCellHeight *_dataSource.count;
+    _bgView.frame = CGRectMake(0, 0, _contentViewWidth, height + 7);
     CGRect lbTRect = _lbTitleFrame;
     _lbTitleFrame = CGRectMake(lbTRect.origin.x, lbTRect.origin.y, lbTRect.size.width, lbTRect.size.height < _tbCellHeight?lbTRect.size.height:_tbCellHeight);
-    [self setHeaderViewFrame:frame];
+    [self setfrssssss];
 }
 
 -(void)setContentViewWidth:(CGFloat)contentViewWidth{
     _contentViewWidth = contentViewWidth;
-    CGRect frame = _headerView.frame;
-    [self setHeaderViewFrame:frame];
+    CGRect bgframe = _bgView.frame;
+    bgframe.size.width = _contentViewWidth;
+    _bgView.frame = bgframe;
+    [self setfrssssss];
 }
 
 -(void)setBackgroundColor:(UIColor *)backgroundColor{
     [super setBackgroundColor:[UIColor clearColor]];
     _bgColor = backgroundColor;
     _contentView.backgroundColor = _bgColor;
-    if (_headerView.image) {
-        //_headerView.image = ThemeImageWithUIColor(@"小三角",_bgColor);
-    }
-    else{
-        _headerView.layerFillColor = _bgColor;
-    }
+//    if (_headerView.image) {
+//        //_headerView.image = ThemeImageWithUIColor(@"小三角",_bgColor);
+//    }
+//    else{
+//        _headerView.layerFillColor = _bgColor;
+//    }
 }
-
-- (void) refresh{
-    if (tbView) {
-        [tbView reloadData];
-    }
-    else{
-        [colorCollectionView reloadData];
-    }
-}
-
 
 - (void)setImgFrame:(CGRect)imgFrame{
     _imgFrame = imgFrame;
@@ -349,16 +243,82 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
 
 -(void)setFrame:(CGRect)frame{
     [super setFrame:CGRectMake(0, 0, SCREEN_SIZE.width, SCREEN_SIZE.height)];
+    _customFrame = frame;
+    CGRect bgframe = _bgView.frame;
+    _customFrame.size.width = bgframe.size.width;
+    _customFrame.size.height = bgframe.size.height;
+    bgframe.origin.x = frame.origin.x;
+    bgframe.origin.y = frame.origin.y;
+    _bgView.frame = bgframe;
 }
 
-- (void) didSelectItemWithTitleCallBack:(void(^)(NSString *title))callBack
-{
-    if (callBack) {
-        self.selectedItemCallBack = ^(NSString *itemTitle){
-            callBack(itemTitle);
-        };
+- (void) setfrssssss{
+    CGRect bgframe = _bgView.frame;
+    if (reItemRect.origin.y < SCREEN_SIZE.height - CGRectGetHeight(_bgView.bounds)) {//箭头在上
+        _contentView.frame = CGRectMake(0, 7, _bgView.bounds.size.width, _bgView.bounds.size.height - 7);
+        bgframe.origin.y = reItemRect.origin.y <= 7 ? 64 : CGRectGetMaxY(reItemRect);
+        if (_headerViewAlignment == GPHeaderviewLocationRight) {
+            bgframe.origin.x = CGRectGetMaxX(reItemRect) - _contentViewWidth;
+            if (CGRectGetMidX(reItemRect) > SCREEN_SIZE.width - 35) {
+                bgframe.origin.x = SCREEN_SIZE.width - 16 - _contentViewWidth;
+            }
+            _trangleView.frame = CGRectMake(CGRectGetMaxX(_bgView.bounds) - 12, 0, 12, 7);
+            maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopLeft cornerRadii:CGSizeMake(_corneradius,_corneradius)];
+        }
+        else if (_headerViewAlignment == GPHeaderviewLocationLeft) {
+            bgframe.origin.x = CGRectGetMinX(reItemRect);
+            if (CGRectGetMidX(reItemRect) < 35) {
+                bgframe.origin.x = 16;
+            }
+            _trangleView.frame = CGRectMake(0, 0, 12, 7);
+            maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopRight cornerRadii:CGSizeMake(_corneradius,_corneradius)];
+        }
+        else{
+            bgframe.origin.x = CGRectGetMidX(reItemRect) - _contentViewWidth / 2;
+            _trangleView.frame = CGRectMake(CGRectGetMidX(_bgView.bounds) - 6, 0, 12, 7);
+            maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopRight|UIRectCornerTopLeft cornerRadii:CGSizeMake(_corneradius,_corneradius)];
+        }
     }
+    else{ // 箭头在下
+        _contentView.frame = CGRectMake(0, 0, _bgView.bounds.size.width, _bgView.bounds.size.height - 7);
+        bgframe.origin.y = CGRectGetMinY(reItemRect) - bgframe.size.height;
+        if (_headerViewAlignment == GPHeaderviewLocationRight) {
+            bgframe.origin.x = CGRectGetMaxX(reItemRect) - _contentViewWidth;
+            _trangleView.frame = CGRectMake(CGRectGetMaxX(_bgView.bounds) - 12, CGRectGetMaxY(_bgView.bounds) - 7, 12, 7);
+            maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerTopRight|UIRectCornerTopLeft cornerRadii:CGSizeMake(_corneradius,_corneradius)];
+        }
+        else if (_headerViewAlignment == GPHeaderviewLocationLeft) {
+            bgframe.origin.x = CGRectGetMinX(reItemRect);
+            _trangleView.frame = CGRectMake(0, CGRectGetMaxY(_bgView.bounds) - 7, 12, 7);
+            maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerTopLeft|UIRectCornerBottomRight|UIRectCornerTopRight cornerRadii:CGSizeMake(_corneradius,_corneradius)];
+        }
+        else{
+            bgframe.origin.x = CGRectGetMidX(reItemRect) - _contentViewWidth / 2;
+            _trangleView.frame = CGRectMake(CGRectGetMidX(_bgView.bounds) - 6, CGRectGetMaxY(_bgView.bounds) - 7, 12, 7);
+            maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopRight|UIRectCornerTopLeft cornerRadii:CGSizeMake(_corneradius,_corneradius)];
+        }
+    }
+    _bgView.frame = bgframe;
+    if (_customFrame.size.width) {
+        _bgView.frame = _customFrame;
+    }
+    tbView.frame = _contentView.bounds;
+    maskLayer = [[CAShapeLayer alloc]init];
+    maskLayer.frame = _contentView.bounds;
+    maskLayer.path = maskPath.CGPath;
+    _contentView.layer.mask = maskLayer;
 }
+
+- (void)tapClick
+{
+    [UIView animateWithDuration:0.5 animations:^{
+        self.alpha = 0;
+    } completion:^(BOOL finished) {
+        self.alpha = 1.0f;
+        [self removeFromSuperview];
+    }];
+}
+
 
 #pragma mark - UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -402,13 +362,13 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     }
     
     NSString *title = _dataSource[indexPath.row];
-//    if ([title isEqualToString:ACTION_NAME_LANGUAGE_CN] || [title isEqualToString:ACTION_NAME_LANGUAGE_EN]) {
-//        if ([GxAppConfig sharedInstance].lang == Chinese) {
-//            title = ACTION_NAME_LANGUAGE_EN;
-//        }else{
-//            title = ACTION_NAME_LANGUAGE_CN;
-//        }
-//    }
+    //    if ([title isEqualToString:ACTION_NAME_LANGUAGE_CN] || [title isEqualToString:ACTION_NAME_LANGUAGE_EN]) {
+    //        if ([GxAppConfig sharedInstance].lang == Chinese) {
+    //            title = ACTION_NAME_LANGUAGE_EN;
+    //        }else{
+    //            title = ACTION_NAME_LANGUAGE_CN;
+    //        }
+    //    }
     lbTitle.font = _titleFont;
     lbTitle.numberOfLines = 0;
     lbTitle.textColor = _textColor;
@@ -429,7 +389,6 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     [self onSelectRowWithTitle:title];
 }
 
-
 #pragma mark - 私有方法 点击事件处理
 - (void)onSelectRowWithTitle:(NSString *)title
 {
@@ -439,112 +398,25 @@ static NSString *cwViewIdentifier = @"collecrtionViewIdentifier";
     }
     
     if (self.target && [self.target respondsToSelector:@selector(didSlectedItemWithTitle:)]) {
-            [self.target didSlectedItemWithTitle:title];
-        }
-        else {
-            
-        }
+        [self.target didSlectedItemWithTitle:title];
+    }
+    else {
+        
+    }
 }
 
+- (void) didSelectItemWithTitleCallBack:(void(^)(NSString *title))callBack
+{
+    if (callBack) {
+        self.selectedItemCallBack = ^(NSString *itemTitle){
+            callBack(itemTitle);
+        };
+    }
+}
 @end
 
+@implementation BgView
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@interface GpHeaderView()
-
-@property (nonatomic, strong) CAShapeLayer *sanlayer;
-
-@end
-
-@implementation GpHeaderView
-
--(instancetype)init{
-    if (self = [super init]) {
-        _isOpposite = NO;
-        _layerFillColor = [UIColor blackColor];
-    }
-    return self;
-}
-
--(void)setLayerFillColor:(UIColor *)layerFillColor{
-    _layerFillColor = layerFillColor;
-    _sanlayer.fillColor = _layerFillColor.CGColor;
-}
-
--(void)setFrame:(CGRect)frame{
-    [super setFrame:frame];
-    //    for (CALayer *layer in self.layer.sublayers) {
-    //        [layer removeFromSuperlayer];
-    //    }
-    [_sanlayer removeFromSuperlayer];
-    UIBezierPath *path = [[UIBezierPath alloc] init];
-    if (!_isOpposite) {
-        // 三角形顶角在上
-        [path moveToPoint:CGPointMake(0, self.bounds.size.height)];
-        [path addLineToPoint:CGPointMake(self.bounds.size.width / 2, 0)];
-        [path addLineToPoint:CGPointMake(self.bounds.size.width, self.bounds.size.height)];
-        [path closePath];
-    }
-    else{
-        // 三角形顶角在下
-        [path moveToPoint:CGPointMake(0, 0)];
-        [path addLineToPoint:CGPointMake(self.bounds.size.width / 2, self.bounds.size.height)];
-        [path addLineToPoint:CGPointMake(self.bounds.size.width, 0)];
-        [path closePath];
-    }
-    
-    _sanlayer = [CAShapeLayer layer];
-    _sanlayer.frame = self.bounds;
-    _sanlayer.path = path.CGPath;
-    [self.layer addSublayer:_sanlayer];
-    
-    
-    _sanlayer.fillColor = _layerFillColor.CGColor;
-    
-}
-
-@end
-
-@interface itemCell(){
-    UILabel *label;
-}
-
-@end
-
-@implementation itemCell
-
-- (instancetype)initWithFrame:(CGRect)frame{
-    if (self = [super initWithFrame:frame]) {
-        _lbTitle = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.frame) - 1, CGRectGetHeight(self.frame))];
-        _lbTitle.textColor = [UIColor whiteColor];
-        _lbTitle.textAlignment = NSTextAlignmentCenter;
-        _lbTitle.font = [UIFont systemFontOfSize:14];
-        [self.contentView addSubview:_lbTitle];
-    }
-    return self;
-}
 
 @end

@@ -32,41 +32,34 @@
 #pragma mark -------添加提示框--------
 - (void) btnMoreClicked:(UIButton *) sender{
     NSArray *data = @[@"个人中心", @"活动介绍"];
-    GPAlertView *alertView = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame titleArray:data];
-    alertView.contentViewWidth = 80;
-    alertView.tbCellHeight = 30;
-    alertView.titleFont = [UIFont systemFontOfSize:12];
-    alertView.target = (id <GPAlertViewDelegate>) self;
-    [alertView showInViewController:self];
-    [alertView didSelectItemWithTitleCallBack:^(NSString *title) {
+    GPAlertView *more = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame titleArray:data];
+    [more showInViewController:self];
+    [more didSelectItemWithTitleCallBack:^(NSString *title) {
         NSLog(@"block :%@", title);
     }];
 }
 
 - (void) btnAddClicked:(UIButton *) sender{
     NSArray *data = @[@"扫一扫", @"添加设备"];
-    GPAlertView *alertView   = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame titleArray:data imageNameArray:data];
-    alertView.target = (id <GPAlertViewDelegate>) self;
-    [alertView showInViewController:self];
-    [alertView didSelectItemWithTitleCallBack:^(NSString *title) {
+    GPAlertView *more = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame titleArray:data imageNameArray:data];
+    [more showInViewController:self];
+    [more didSelectItemWithTitleCallBack:^(NSString *title) {
         NSLog(@"block :%@", title);
     }];
 }
 
 - (void) btnShareClicked:(UIButton *) sender{
     NSArray *data = @[@"悟空", @"增强版", @"红外感应", @"智能门磁", @"海曼检测", @"S3网关", @"门栓"];
-    GPAlertView *alertView = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame titleArray:data];
-    alertView.target = (id <GPAlertViewDelegate>) self;
-    alertView.backgroundColor = [UIColor orangeColor];
-    [alertView showInViewController:self];
-    alertView.contentViewWidth = 100;
-    alertView.cellNumbersMax = 5;
-    alertView.lineColor = [UIColor whiteColor];
-    alertView.tbCellHeight = 35;
-    //alertView.headerViewAlignment = HeaderviewLocationLeft;
-   
-    alertView.titleFont = [UIFont systemFontOfSize:15];
-    [alertView didSelectItemWithTitleCallBack:^(NSString *title) {
+    GPAlertView *more = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame titleArray:data];
+    more.cellNumbersMax = 6;
+    more.contentViewWidth = 80;
+    more.frame = CGRectMake(30, 64, 2000, 120);
+    more.tbCellHeight = 35;
+    more.target = (id<GPAlertViewDelegate>)self;
+    [more showInViewController:self];
+    more.titleFont = [UIFont systemFontOfSize:12];
+    
+    [more didSelectItemWithTitleCallBack:^(NSString *title) {
         NSLog(@"block :%@", title);
     }];
 }
@@ -87,15 +80,29 @@
         CGRect lbRrect = [cell.lb convertRect:rect1 toView:self.view];
 //        NSLog(@"rect2 = %@", NSStringFromCGRect(lbRrect));
         
-//        NSArray *data = @[@"布防", @"修改名称", @"撤防", @"报警"];
-//        GPAlertView *alertView = [[GPAlertView alloc] initWithTableViewCell:lbRrect data:data indexPath:indexPath];
-//        alertView.titleFont = [UIFont systemFontOfSize:12];
-//        if (indexPath.row % 2) {
-//            alertView.backgroundColor = [UIColor colorWithRed:40/255.0 green:170/255.0 blue:230/255.0 alpha:1];
-//            alertView.lineColor = [UIColor blackColor];
-//        }
-//        alertView.target = (id <GPAlertViewDelegate>) self;
-//        [alertView showInViewController:self];
+        NSArray *data = @[@"布防", @"修改名称", @"撤防", @"报警"];
+        GPAlertView *more = [[GPAlertView alloc] initWithNavigationItemRect:lbRrect titleArray:data];
+        
+        if (indexPath.row % 3 == 1) {
+            more.headerViewAlignment = GPHeaderviewLocationLeft;
+            more.backgroundColor = [UIColor orangeColor];
+        }
+        else if (indexPath.row % 3 == 2) {
+            more.headerViewAlignment = GPHeaderviewLocationCenter;
+            more.backgroundColor = [UIColor yellowColor];
+            more.textColor = [UIColor blackColor];
+        }
+        else {
+            more.headerViewAlignment = GPHeaderviewLocationRight;
+            more.tbCellHeight = 30;
+            more.lineColor = [UIColor whiteColor];
+            more.cellNumbersMax = 4;
+        }
+        
+        [more showInViewController:self];
+        [more didSelectItemWithTitleCallBack:^(NSString *title) {
+            NSLog(@"block :%@", title);
+        }];
     }
 }
 
@@ -155,8 +162,10 @@
     UIButton *btnMore = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
     [btnMore setImage:[UIImage imageNamed:@"更多"] forState:UIControlStateNormal];
     [btnMore addTarget: self action:@selector(btnMoreClicked:) forControlEvents:UIControlEventTouchUpInside];
+    //btnMore.backgroundColor = [UIColor redColor];
     UIButton *btnShare0 = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
     [btnShare0 setImage:[UIImage imageNamed:@"分享"] forState:UIControlStateNormal];
+    //btnShare0.backgroundColor = [UIColor greenColor];
     [btnShare0 addTarget: self action:@selector(btnShareClicked:) forControlEvents:UIControlEventTouchUpInside];
     
     UIBarButtonItem *itemMore = [[UIBarButtonItem alloc] initWithCustomView:btnMore];
@@ -166,8 +175,10 @@
     UIButton *btnAdd = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
     [btnAdd setImage:[UIImage imageNamed:@"添加"] forState:UIControlStateNormal];
     [btnAdd addTarget: self action:@selector(btnAddClicked:) forControlEvents:UIControlEventTouchUpInside];
+    //btnAdd.backgroundColor = [UIColor redColor];
     UIButton *btnShare = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
     [btnShare setImage:[UIImage imageNamed:@"分享"] forState:UIControlStateNormal];
+    //btnShare.backgroundColor = [UIColor greenColor];
     [btnShare addTarget: self action:@selector(btnShareClicked:) forControlEvents:UIControlEventTouchUpInside];
     
     UIBarButtonItem *itemAdd = [[UIBarButtonItem alloc] initWithCustomView:btnAdd];
@@ -227,6 +238,7 @@
         imageView.backgroundColor = [UIColor greenColor];
         
         _lb = [[UILabel alloc] initWithFrame: CGRectMake(70, 15, 100, 30)];
+        _lb.backgroundColor = [[UIColor redColor] colorWithAlphaComponent:0.1];
         [self.contentView addSubview:_lb];
     }
     return self;
