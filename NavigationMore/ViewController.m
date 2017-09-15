@@ -32,15 +32,13 @@
 #pragma mark -------添加提示框--------
 - (void) btnMoreClicked:(UIButton *) sender{
     NSArray *data = @[@"个人中心", @"活动介绍"];
-    GPAlertView *alertView = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame data:data];
+    GPAlertView *alertView = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame titleArray:data];
     alertView.contentViewWidth = 80;
     alertView.tbCellHeight = 30;
-//    //alertView.sanSize = CGSizeMake(20, 12);
     alertView.titleFont = [UIFont systemFontOfSize:12];
     alertView.target = (id <GPAlertViewDelegate>) self;
-    [alertView show];
-//    alertView.alignment = NSTextAlignmentLeft;
-    [alertView setSelectedItemCallBack:^(NSString *title){
+    [alertView showInViewController:self];
+    [alertView didSelectItemWithTitleCallBack:^(NSString *title) {
         NSLog(@"block :%@", title);
     }];
 }
@@ -49,28 +47,26 @@
     NSArray *data = @[@"扫一扫", @"添加设备"];
     GPAlertView *alertView   = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame titleArray:data imageNameArray:data];
     alertView.target = (id <GPAlertViewDelegate>) self;
-    [alertView show];
-    alertView.headerViewAlignment = HeaderviewLocationRight;
-//    [alertView setSelectedItemCallBack:^(NSString *title){
-//        NSLog(@"block :%@", title);
-//    }];
-    [alertView onSelectRowWithTitleCallBack:^(NSString *title) {
+    [alertView showInViewController:self];
+    [alertView didSelectItemWithTitleCallBack:^(NSString *title) {
         NSLog(@"block :%@", title);
     }];
 }
 
 - (void) btnShareClicked:(UIButton *) sender{
     NSArray *data = @[@"悟空", @"增强版", @"红外感应", @"智能门磁", @"海曼检测", @"S3网关", @"门栓"];
-    GPAlertView *alertView = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame data:data];
+    GPAlertView *alertView = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame titleArray:data];
     alertView.target = (id <GPAlertViewDelegate>) self;
     alertView.backgroundColor = [UIColor orangeColor];
-    [alertView show];
+    [alertView showInViewController:self];
     alertView.contentViewWidth = 100;
     alertView.cellNumbersMax = 5;
+    alertView.lineColor = [UIColor whiteColor];
     alertView.tbCellHeight = 35;
-    
+    //alertView.headerViewAlignment = HeaderviewLocationLeft;
+   
     alertView.titleFont = [UIFont systemFontOfSize:15];
-    [alertView setSelectedItemCallBack:^(NSString *title){
+    [alertView didSelectItemWithTitleCallBack:^(NSString *title) {
         NSLog(@"block :%@", title);
     }];
 }
@@ -91,15 +87,15 @@
         CGRect lbRrect = [cell.lb convertRect:rect1 toView:self.view];
 //        NSLog(@"rect2 = %@", NSStringFromCGRect(lbRrect));
         
-        NSArray *data = @[@"布防", @"修改名称", @"撤防", @"报警"];
-        GPAlertView *alertView = [[GPAlertView alloc] initWithTableViewCell:lbRrect data:data indexPath:indexPath];
-        alertView.titleFont = [UIFont systemFontOfSize:12];
-        if (indexPath.row % 2) {
-            alertView.backgroundColor = [UIColor colorWithRed:40/255.0 green:170/255.0 blue:230/255.0 alpha:1];
-            alertView.lineColor = [UIColor blackColor];
-        }
-        alertView.target = (id <GPAlertViewDelegate>) self;
-        [alertView show];
+//        NSArray *data = @[@"布防", @"修改名称", @"撤防", @"报警"];
+//        GPAlertView *alertView = [[GPAlertView alloc] initWithTableViewCell:lbRrect data:data indexPath:indexPath];
+//        alertView.titleFont = [UIFont systemFontOfSize:12];
+//        if (indexPath.row % 2) {
+//            alertView.backgroundColor = [UIColor colorWithRed:40/255.0 green:170/255.0 blue:230/255.0 alpha:1];
+//            alertView.lineColor = [UIColor blackColor];
+//        }
+//        alertView.target = (id <GPAlertViewDelegate>) self;
+//        [alertView showInViewController:self];
     }
 }
 
