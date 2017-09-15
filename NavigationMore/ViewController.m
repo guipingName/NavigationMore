@@ -32,7 +32,7 @@
 #pragma mark -------添加提示框--------
 - (void) btnMoreClicked:(UIButton *) sender{
     NSArray *data = @[@"个人中心", @"活动介绍"];
-    GPAlertView *more = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame titleArray:data];
+    GPAlertView *more = [[GPAlertView alloc] initWithItemRect:sender.frame titleArray:data];
     [more showInViewController:self];
     [more didSelectItemWithTitleCallBack:^(NSString *title) {
         NSLog(@"block :%@", title);
@@ -41,7 +41,7 @@
 
 - (void) btnAddClicked:(UIButton *) sender{
     NSArray *data = @[@"扫一扫", @"添加设备"];
-    GPAlertView *more = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame titleArray:data imageNameArray:data];
+    GPAlertView *more = [[GPAlertView alloc] initWithItemRect:sender.frame titleArray:data imageNameArray:data];
     [more showInViewController:self];
     [more didSelectItemWithTitleCallBack:^(NSString *title) {
         NSLog(@"block :%@", title);
@@ -50,10 +50,24 @@
 
 - (void) btnShareClicked:(UIButton *) sender{
     NSArray *data = @[@"悟空", @"增强版", @"红外感应", @"智能门磁", @"海曼检测", @"S3网关", @"门栓"];
-    GPAlertView *more = [[GPAlertView alloc] initWithNavigationItemRect:sender.frame titleArray:data];
+    GPAlertView *more = [[GPAlertView alloc] initWithItemRect:sender.frame titleArray:data];
     more.cellNumbersMax = 6;
     more.contentViewWidth = 80;
-    more.frame = CGRectMake(30, 64, 2000, 120);
+    more.tbCellHeight = 35;
+    [more showInViewController:self];
+    more.titleFont = [UIFont systemFontOfSize:12];
+    
+    [more didSelectItemWithTitleCallBack:^(NSString *title) {
+        NSLog(@"block :%@", title);
+    }];
+}
+
+- (void) btnrightShareClicked:(UIButton *) sender{
+    NSArray *data = @[@"悟空", @"增强版", @"红外感应", @"智能门磁", @"海曼检测", @"S3网关", @"门栓"];
+    GPAlertView *more = [[GPAlertView alloc] initWithItemRect:sender.frame titleArray:data];
+    more.cellNumbersMax = 6;
+    more.contentViewWidth = 80;
+    more.frame = CGRectMake(150, 64, 2000, 120);
     more.tbCellHeight = 35;
     more.target = (id<GPAlertViewDelegate>)self;
     [more showInViewController:self];
@@ -81,7 +95,7 @@
 //        NSLog(@"rect2 = %@", NSStringFromCGRect(lbRrect));
         
         NSArray *data = @[@"布防", @"修改名称", @"撤防", @"报警"];
-        GPAlertView *more = [[GPAlertView alloc] initWithNavigationItemRect:lbRrect titleArray:data];
+        GPAlertView *more = [[GPAlertView alloc] initWithItemRect:lbRrect titleArray:data];
         
         if (indexPath.row % 3 == 1) {
             more.headerViewAlignment = GPHeaderviewLocationLeft;
@@ -179,7 +193,7 @@
     UIButton *btnShare = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
     [btnShare setImage:[UIImage imageNamed:@"分享"] forState:UIControlStateNormal];
     //btnShare.backgroundColor = [UIColor greenColor];
-    [btnShare addTarget: self action:@selector(btnShareClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [btnShare addTarget: self action:@selector(btnrightShareClicked:) forControlEvents:UIControlEventTouchUpInside];
     
     UIBarButtonItem *itemAdd = [[UIBarButtonItem alloc] initWithCustomView:btnAdd];
     UIBarButtonItem *itemShare = [[UIBarButtonItem alloc] initWithCustomView:btnShare];

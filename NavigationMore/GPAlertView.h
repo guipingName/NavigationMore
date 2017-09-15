@@ -34,10 +34,10 @@ typedef NS_ENUM(NSInteger, GPHeaderviewLocation) {
 @property (nonatomic, assign) NSUInteger cellNumbersMax;    // 设置显示cell的个数，当大于该设定值，tb可以滚动 默认超过3个时tb可以滚动
 
 // 导航栏提示框（有图
--(instancetype)initWithNavigationItemRect:(CGRect)itemRect titleArray:(NSArray *)titleArray imageNameArray:(NSArray *)imageNameArray;
+-(instancetype)initWithItemRect:(CGRect)itemRect titleArray:(NSArray *)titleArray imageNameArray:(NSArray *)imageNameArray;
 
 // 导航栏提示框（无图）
-- (instancetype) initWithNavigationItemRect:(CGRect)itemRect titleArray:(NSArray *) titleArray;
+- (instancetype) initWithItemRect:(CGRect)itemRect titleArray:(NSArray *) titleArray;
 
 // 显示
 - (void) showInViewController:(UIViewController *) viewController;

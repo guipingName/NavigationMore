@@ -50,21 +50,17 @@ static NSString *tbViewIdentifier = @"tbViewIdentifier";
     [[UIApplication sharedApplication].keyWindow addSubview:self];
 }
 
--(instancetype)initWithNavigationItemRect:(CGRect)itemRect titleArray:(NSArray *)titleArray imageNameArray:(NSArray *)imageNameArray{
+-(instancetype)initWithItemRect:(CGRect)itemRect titleArray:(NSArray *)titleArray imageNameArray:(NSArray *)imageNameArray{
     _imageNameSource = imageNameArray;
     if (titleArray.count != imageNameArray.count) {
         NSLog(@"文字和图片个数不一致");
         return  nil;
     }
-    return [self initWithTypeItem:itemRect data:titleArray];
+    return [self initWithItemRect:itemRect titleArray:titleArray];
 }
 
-- (instancetype) initWithNavigationItemRect:(CGRect)itemRect titleArray:(NSArray *) titleArray{
-    return [self initWithTypeItem:itemRect data:titleArray];
-}
-
-- (instancetype)initWithTypeItem:(CGRect)itemRect data:(NSArray *) dataSource {
-    if (!dataSource || dataSource.count == 0) {
+- (instancetype) initWithItemRect:(CGRect)itemRect titleArray:(NSArray *) titleArray{
+    if (!titleArray || titleArray.count == 0) {
         NSLog(@"********传入的数据源****有误********");
         return nil;
     }
@@ -72,7 +68,7 @@ static NSString *tbViewIdentifier = @"tbViewIdentifier";
         self.backgroundColor = [UIColor clearColor];
         //NSLog(@"源 %@", NSStringFromCGRect(itemRect));
         
-        _dataSource = dataSource;
+        _dataSource = titleArray;
         
         // 默认值
         _bgColor = [[UIColor blackColor] colorWithAlphaComponent:0.85];
