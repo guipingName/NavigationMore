@@ -14,7 +14,6 @@
 		385EFC6F1F62461400E61A6F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 385EFC6D1F62461400E61A6F /* LaunchScreen.storyboard */; };
 		385EFC811F62465B00E61A6F /* 分享@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 385EFC7A1F62465B00E61A6F /* 分享@2x.png */; };
 		385EFC821F62465B00E61A6F /* 分享@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 385EFC7B1F62465B00E61A6F /* 分享@3x.png */; };
-		385EFC831F62465B00E61A6F /* 小三角@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 385EFC7C1F62465B00E61A6F /* 小三角@3x.png */; };
 		385EFC841F62465B00E61A6F /* 更多@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 385EFC7D1F62465B00E61A6F /* 更多@2x.png */; };
 		385EFC851F62465B00E61A6F /* 更多@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 385EFC7E1F62465B00E61A6F /* 更多@3x.png */; };
 		385EFC861F62465B00E61A6F /* 添加@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 385EFC7F1F62465B00E61A6F /* 添加@2x.png */; };
@@ -24,6 +23,10 @@
 		385EFC8E1F626C3100E61A6F /* 扫一扫@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 385EFC8A1F626C3100E61A6F /* 扫一扫@2x.png */; };
 		385EFC8F1F626C3100E61A6F /* 添加设备@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 385EFC8B1F626C3100E61A6F /* 添加设备@2x.png */; };
 		385EFC921F62834500E61A6F /* UIImage+RTTint.m in Sources */ = {isa = PBXBuildFile; fileRef = 385EFC911F62834500E61A6F /* UIImage+RTTint.m */; };
+		38E2A34F1F6F5F20003619E0 /* 小三角右下@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 38E2A34B1F6F5F20003619E0 /* 小三角右下@3x.png */; };
+		38E2A3501F6F5F20003619E0 /* 小三角右上@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 38E2A34C1F6F5F20003619E0 /* 小三角右上@3x.png */; };
+		38E2A3511F6F5F20003619E0 /* 小三角左下@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 38E2A34D1F6F5F20003619E0 /* 小三角左下@3x.png */; };
+		38E2A3521F6F5F20003619E0 /* 小三角左上@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 38E2A34E1F6F5F20003619E0 /* 小三角左上@3x.png */; };
 		38EAD71C1F6BAC2200322D5E /* GPAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 38EAD71B1F6BAC2200322D5E /* GPAlertView.m */; };
 /* End PBXBuildFile section */
 
@@ -39,7 +42,6 @@
 		385EFC701F62461400E61A6F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		385EFC7A1F62465B00E61A6F /* 分享@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "分享@2x.png"; sourceTree = "<group>"; };
 		385EFC7B1F62465B00E61A6F /* 分享@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "分享@3x.png"; sourceTree = "<group>"; };
-		385EFC7C1F62465B00E61A6F /* 小三角@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "小三角@3x.png"; sourceTree = "<group>"; };
 		385EFC7D1F62465B00E61A6F /* 更多@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "更多@2x.png"; sourceTree = "<group>"; };
 		385EFC7E1F62465B00E61A6F /* 更多@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "更多@3x.png"; sourceTree = "<group>"; };
 		385EFC7F1F62465B00E61A6F /* 添加@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "添加@2x.png"; sourceTree = "<group>"; };
@@ -50,6 +52,10 @@
 		385EFC8B1F626C3100E61A6F /* 添加设备@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "添加设备@2x.png"; sourceTree = "<group>"; };
 		385EFC901F62834500E61A6F /* UIImage+RTTint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+RTTint.h"; sourceTree = "<group>"; };
 		385EFC911F62834500E61A6F /* UIImage+RTTint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+RTTint.m"; sourceTree = "<group>"; };
+		38E2A34B1F6F5F20003619E0 /* 小三角右下@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "小三角右下@3x.png"; sourceTree = "<group>"; };
+		38E2A34C1F6F5F20003619E0 /* 小三角右上@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "小三角右上@3x.png"; sourceTree = "<group>"; };
+		38E2A34D1F6F5F20003619E0 /* 小三角左下@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "小三角左下@3x.png"; sourceTree = "<group>"; };
+		38E2A34E1F6F5F20003619E0 /* 小三角左上@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "小三角左上@3x.png"; sourceTree = "<group>"; };
 		38EAD71A1F6BAC2200322D5E /* GPAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPAlertView.h; sourceTree = "<group>"; };
 		38EAD71B1F6BAC2200322D5E /* GPAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GPAlertView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -114,10 +120,13 @@
 			children = (
 				385EFC7A1F62465B00E61A6F /* 分享@2x.png */,
 				385EFC7B1F62465B00E61A6F /* 分享@3x.png */,
-				385EFC7C1F62465B00E61A6F /* 小三角@3x.png */,
 				385EFC7D1F62465B00E61A6F /* 更多@2x.png */,
 				385EFC7E1F62465B00E61A6F /* 更多@3x.png */,
 				385EFC7F1F62465B00E61A6F /* 添加@2x.png */,
+				38E2A34B1F6F5F20003619E0 /* 小三角右下@3x.png */,
+				38E2A34C1F6F5F20003619E0 /* 小三角右上@3x.png */,
+				38E2A34D1F6F5F20003619E0 /* 小三角左下@3x.png */,
+				38E2A34E1F6F5F20003619E0 /* 小三角左上@3x.png */,
 				385EFC801F62465B00E61A6F /* 添加@3x.png */,
 				385EFC8A1F626C3100E61A6F /* 扫一扫@2x.png */,
 				385EFC881F626C3100E61A6F /* 扫一扫@3x.png */,
@@ -189,15 +198,18 @@
 				385EFC821F62465B00E61A6F /* 分享@3x.png in Resources */,
 				385EFC871F62465B00E61A6F /* 添加@3x.png in Resources */,
 				385EFC861F62465B00E61A6F /* 添加@2x.png in Resources */,
+				38E2A3521F6F5F20003619E0 /* 小三角左上@3x.png in Resources */,
 				385EFC8D1F626C3100E61A6F /* 添加设备@3x.png in Resources */,
+				38E2A3511F6F5F20003619E0 /* 小三角左下@3x.png in Resources */,
 				385EFC8E1F626C3100E61A6F /* 扫一扫@2x.png in Resources */,
+				38E2A34F1F6F5F20003619E0 /* 小三角右下@3x.png in Resources */,
 				385EFC811F62465B00E61A6F /* 分享@2x.png in Resources */,
 				385EFC841F62465B00E61A6F /* 更多@2x.png in Resources */,
 				385EFC6F1F62461400E61A6F /* LaunchScreen.storyboard in Resources */,
 				385EFC851F62465B00E61A6F /* 更多@3x.png in Resources */,
-				385EFC831F62465B00E61A6F /* 小三角@3x.png in Resources */,
 				385EFC8F1F626C3100E61A6F /* 添加设备@2x.png in Resources */,
 				385EFC6C1F62461400E61A6F /* Assets.xcassets in Resources */,
+				38E2A3501F6F5F20003619E0 /* 小三角右上@3x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

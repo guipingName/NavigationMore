@@ -105,23 +105,22 @@ static NSString *tbViewIdentifier = @"tbViewIdentifier";
         _contentView.backgroundColor = _bgColor;
         [_bgView addSubview:_contentView];
         _trangleView = [[UIImageView alloc] init];
-        _trangleView.backgroundColor = _bgColor;
+        //_trangleView.backgroundColor = _bgColor;
         [_bgView addSubview:_trangleView];
         
         if (itemRect.origin.y < SCREEN_SIZE.height - CGRectGetHeight(_bgView.bounds)) {//箭头在上
             //_contentView.frame = CGRectMake(0, 7, _bgView.bounds.size.width, _bgView.bounds.size.height - 7);
             if (CGRectGetMidX(itemRect) > SCREEN_SIZE.width - 35) { // 右边
                 _headerViewAlignment = GPHeaderviewLocationRight;
-                [self setfrssssss];
-                
+                [self updateFrame];
             }
             else if (CGRectGetMidX(itemRect) < 35){ // 左边
                 _headerViewAlignment = GPHeaderviewLocationLeft;
-                [self setfrssssss];
+                [self updateFrame];
             }
             else{ // 中间
                 _headerViewAlignment = GPHeaderviewLocationCenter;
-                [self setfrssssss];
+                [self updateFrame];
             }
         }
         else{ // 箭头在下
@@ -129,15 +128,15 @@ static NSString *tbViewIdentifier = @"tbViewIdentifier";
             bgframe.origin.y = CGRectGetMinY(itemRect) - bgframe.size.height;//  系统创建的item的Y=7
             if (CGRectGetMidX(itemRect) > SCREEN_SIZE.width - 35) { // 右边
                 _headerViewAlignment = GPHeaderviewLocationRight;
-                [self setfrssssss];
+                [self updateFrame];
             }
             else if (CGRectGetMidX(itemRect) < 35){ // 左边
                 _headerViewAlignment = GPHeaderviewLocationLeft;
-                [self setfrssssss];
+                [self updateFrame];
             } // 中间
             else{
                 _headerViewAlignment = GPHeaderviewLocationCenter;
-                [self setfrssssss];
+                [self updateFrame];
             }
             _bgView.frame = bgframe;
         }
@@ -183,7 +182,7 @@ static NSString *tbViewIdentifier = @"tbViewIdentifier";
     _cellNumbersMax = cellNumbersMax;
     CGFloat height = _dataSource.count > _cellNumbersMax ? _tbCellHeight * _cellNumbersMax : _tbCellHeight *_dataSource.count;
     _bgView.frame = CGRectMake(0, 0, _contentViewWidth, height + 7);
-    [self setfrssssss];
+    [self updateFrame];
     if (_dataSource.count < _cellNumbersMax +1) {
         tbView.scrollEnabled = NO;
     }
@@ -195,7 +194,7 @@ static NSString *tbViewIdentifier = @"tbViewIdentifier";
 
 -(void)setHeaderViewAlignment:(GPHeaderviewLocation)headerViewAlignment{
     _headerViewAlignment = headerViewAlignment;
-    [self setfrssssss];
+    [self updateFrame];
 }
 
 -(void)setTbCellHeight:(CGFloat)tbCellHeight{
@@ -204,7 +203,7 @@ static NSString *tbViewIdentifier = @"tbViewIdentifier";
     _bgView.frame = CGRectMake(0, 0, _contentViewWidth, height + 7);
     CGRect lbTRect = _lbTitleFrame;
     _lbTitleFrame = CGRectMake(lbTRect.origin.x, lbTRect.origin.y, lbTRect.size.width, lbTRect.size.height < _tbCellHeight?lbTRect.size.height:_tbCellHeight);
-    [self setfrssssss];
+    [self updateFrame];
 }
 
 -(void)setContentViewWidth:(CGFloat)contentViewWidth{
@@ -212,7 +211,7 @@ static NSString *tbViewIdentifier = @"tbViewIdentifier";
     CGRect bgframe = _bgView.frame;
     bgframe.size.width = _contentViewWidth;
     _bgView.frame = bgframe;
-    [self setfrssssss];
+    [self updateFrame];
 }
 
 -(void)setBackgroundColor:(UIColor *)backgroundColor{
@@ -248,12 +247,13 @@ static NSString *tbViewIdentifier = @"tbViewIdentifier";
     _bgView.frame = bgframe;
 }
 
-- (void) setfrssssss{
+- (void) updateFrame{
     CGRect bgframe = _bgView.frame;
     if (reItemRect.origin.y < SCREEN_SIZE.height - CGRectGetHeight(_bgView.bounds)) {//箭头在上
         _contentView.frame = CGRectMake(0, 7, _bgView.bounds.size.width, _bgView.bounds.size.height - 7);
         bgframe.origin.y = reItemRect.origin.y <= 7 ? 64 : CGRectGetMaxY(reItemRect);
         if (_headerViewAlignment == GPHeaderviewLocationRight) {
+            _trangleView.image = [UIImage imageNamed:@"小三角右上"];
             bgframe.origin.x = CGRectGetMaxX(reItemRect) - _contentViewWidth;
             if (CGRectGetMidX(reItemRect) > SCREEN_SIZE.width - 35) {
                 bgframe.origin.x = SCREEN_SIZE.width - 16 - _contentViewWidth;
@@ -262,6 +262,7 @@ static NSString *tbViewIdentifier = @"tbViewIdentifier";
             maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerBottomRight|UIRectCornerTopLeft cornerRadii:CGSizeMake(_corneradius,_corneradius)];
         }
         else if (_headerViewAlignment == GPHeaderviewLocationLeft) {
+            _trangleView.image = [UIImage imageNamed:@"小三角左上"];
             bgframe.origin.x = CGRectGetMinX(reItemRect);
             if (CGRectGetMidX(reItemRect) < 35) {
                 bgframe.origin.x = 16;
@@ -279,11 +280,13 @@ static NSString *tbViewIdentifier = @"tbViewIdentifier";
         _contentView.frame = CGRectMake(0, 0, _bgView.bounds.size.width, _bgView.bounds.size.height - 7);
         bgframe.origin.y = CGRectGetMinY(reItemRect) - bgframe.size.height;
         if (_headerViewAlignment == GPHeaderviewLocationRight) {
+            _trangleView.image = [UIImage imageNamed:@"小三角右下"];
             bgframe.origin.x = CGRectGetMaxX(reItemRect) - _contentViewWidth;
             _trangleView.frame = CGRectMake(CGRectGetMaxX(_bgView.bounds) - 12, CGRectGetMaxY(_bgView.bounds) - 7, 12, 7);
             maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerBottomLeft|UIRectCornerTopRight|UIRectCornerTopLeft cornerRadii:CGSizeMake(_corneradius,_corneradius)];
         }
         else if (_headerViewAlignment == GPHeaderviewLocationLeft) {
+            _trangleView.image = [UIImage imageNamed:@"小三角左下"];
             bgframe.origin.x = CGRectGetMinX(reItemRect);
             _trangleView.frame = CGRectMake(0, CGRectGetMaxY(_bgView.bounds) - 7, 12, 7);
             maskPath = [UIBezierPath bezierPathWithRoundedRect:_contentView.bounds byRoundingCorners:UIRectCornerTopLeft|UIRectCornerBottomRight|UIRectCornerTopRight cornerRadii:CGSizeMake(_corneradius,_corneradius)];
